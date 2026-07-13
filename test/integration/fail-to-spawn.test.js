@@ -1,7 +1,6 @@
 import { describe, test } from 'vitest'
 
 import { addConfigFileSerializer } from './__utils__/addConfigFileSerializer.js'
-import { isWindowsActions } from './__utils__/isWindows.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
 describe('lint-staged', () => {
@@ -19,11 +18,7 @@ describe('lint-staged', () => {
 
       await execGit(['add', '.'])
 
-      await expect(gitCommit()).rejects.toThrow(
-        isWindowsActions()
-          ? "'cmd-not-found' is not recognized as an internal or external command"
-          : 'Task failed to spawn: cmd-not-found'
-      )
+      await expect(gitCommit()).rejects.toThrow('cmd-not-found')
     })
   )
 })

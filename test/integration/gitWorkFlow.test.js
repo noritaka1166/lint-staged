@@ -13,7 +13,6 @@ import {
   RestoreMergeStatusError,
   RestoreUnstagedChangesError,
 } from '../../lib/symbols.js'
-import { normalizeWindowsNewlines } from './__utils__/normalizeWindowsNewlines.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
 vi.mock('../../lib/file.js', () => ({
@@ -182,8 +181,7 @@ describe('gitWorkflow', () => {
         const ctx = getInitialState()
         await gitWorkflow.hidePartiallyStagedChanges(ctx)
 
-        /** @todo `git mv` in GitHub Windows runners seem to add `\r\n` newlines in this case. */
-        expect(normalizeWindowsNewlines(await readFile('TEST.md'))).toStrictEqual(origContent)
+        expect(await readFile('TEST.md')).toStrictEqual(origContent)
       })
     )
   })
