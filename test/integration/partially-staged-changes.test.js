@@ -3,7 +3,6 @@ import { describe, test } from 'vitest'
 import * as configFixtures from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { addConfigFileSerializer } from './__utils__/addConfigFileSerializer.js'
-import { normalizeWindowsNewlines } from './__utils__/normalizeWindowsNewlines.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
 addConfigFileSerializer()
@@ -41,10 +40,7 @@ describe('lint-staged', () => {
       expect(status).toMatch('modified:   test.js')
       expect(status).toMatch('no changes added to commit')
 
-      /** @todo `git` in GitHub Windows runners seem to add `\r\n` newlines in this case. */
-      expect(normalizeWindowsNewlines(await readFile('test.js'))).toEqual(
-        fileFixtures.prettyJS + appended
-      )
+      expect(await readFile('test.js')).toEqual(fileFixtures.prettyJS + appended)
     })
   )
 

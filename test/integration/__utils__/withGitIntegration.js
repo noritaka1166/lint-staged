@@ -8,8 +8,6 @@ import { execGit as execGitBase } from '../../../lib/execGit.js'
 import lintStaged from '../../../lib/index.js'
 import { normalizePath } from '../../../lib/normalizePath.js'
 import { createTempDir } from '../../__utils__/createTempDir.js'
-import { isWindowsActions } from './isWindows'
-import { normalizeWindowsNewlines } from './normalizeWindowsNewlines.js'
 
 const ensureDir = async (inputPath) => {
   const parsed = path.parse(inputPath)
@@ -22,7 +20,7 @@ const getGitUtils = (cwd) => {
   }
 
   /**
-   * Get file content, coercing Windows `\r\n` newlines to `\n`
+   * Get file content
    *
    * @param {string} filename relative to the working directory
    * @param {string} [dir] the working directory, by default CWD
@@ -32,8 +30,7 @@ const getGitUtils = (cwd) => {
     const filepath = path.resolve(dir, filename)
 
     try {
-      const file = await fs.readFile(filepath, { encoding: 'utf-8' })
-      return normalizeWindowsNewlines(file)
+      return await fs.readFile(filepath, { encoding: 'utf-8' })
     } catch (error) {
       console.error(`Failed to read file "${filepath}" with error:`, error)
       throw error
@@ -177,11 +174,7 @@ export const withGitIntegration =
 
     // Init repository with initial commit
     await utils.execGit(['init', '--initial-branch', 'main'])
-
-    if (isWindowsActions()) {
-      await utils.execGit(['config', 'core.autocrlf', 'input'])
-    }
-
+    await utils.execGit(['config', 'core.autocrlf', 'input'])
     await utils.execGit(['config', 'user.name', '"test"'])
     await utils.execGit(['config', 'user.email', '"test@test.com"'])
     await utils.execGit(['config', 'merge.conflictstyle', 'merge'])
