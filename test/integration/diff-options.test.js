@@ -141,9 +141,7 @@ describe('lint-staged', () => {
         {
           config: {
             '*.js': 'prettier --list-different',
-            '*': () => [
-              /* despite empty array, this triggers processing of all files */
-            ],
+            '*': () => [/* despite empty array, this triggers processing of all files */],
           },
           cwd,
           diffFilter: 'D',
