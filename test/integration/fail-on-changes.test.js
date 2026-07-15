@@ -25,7 +25,7 @@ describe('lint-staged', () => {
         })
       } catch (error) {
         expect(error.message).toMatch('lint-staged failed because `--fail-on-changes` was used')
-        expect(error.message).toMatch('"skip":"Cleaning up temporary files..."')
+        expect(error.message).toMatch('Skipped cleaning up temporary files…')
       }
 
       // Changes weren't reverted because "--no-revert" is implied

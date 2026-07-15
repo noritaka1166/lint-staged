@@ -87,7 +87,7 @@ describe('lint-staged', () => {
       `)
 
       await expect(gitCommit({ lintStaged: { allowEmpty: true } })).rejects.toThrow(
-        'Reverting to original state because of errors...'
+        'Reverting to original state because of errors…'
       )
 
       expect(await execGit(['status', '--porcelain'])).toMatchInlineSnapshot(`

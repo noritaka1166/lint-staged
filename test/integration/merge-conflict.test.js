@@ -178,7 +178,7 @@ describe('lint-staged', () => {
             },
           },
         })
-      ).rejects.toThrow('Unstaged changes could not be restored due to a merge conflict!')
+      ).rejects.toThrow('Failed to restore unstaged changes!')
 
       // Something was wrong so the repo is returned to original state
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')

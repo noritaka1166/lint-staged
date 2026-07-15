@@ -53,7 +53,7 @@ describe('lint-staged', () => {
             },
           },
         })
-      ).rejects.toThrow('Unstaged changes could not be restored due to a merge conflict!')
+      ).rejects.toThrow('Failed to restore unstaged changes!')
 
       // Something was wrong so the commit was aborted
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')
@@ -145,7 +145,7 @@ describe('lint-staged', () => {
       expect(error).toMatch(
         'Skipping backup because `--no-stash` was used. This might result in data loss.'
       )
-      expect(error).toMatch('Unstaged changes could not be restored due to a merge conflict')
+      expect(error).toMatch('Failed to restore unstaged changes')
       expect(error).toMatch('Unstaged changes have been kept back in a patch file:')
       expect(error).toMatch('lint-staged_unstaged.patch')
 

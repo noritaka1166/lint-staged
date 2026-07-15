@@ -25,13 +25,14 @@ vi.mock('../../lib/getStagedFiles.js', () => ({
 }))
 
 const mockGitWorkflow = {
-  prepare: vi.fn(() => Promise.resolve()),
+  cleanup: vi.fn(() => Promise.resolve()),
   hideUnstagedChanges: vi.fn(() => Promise.resolve()),
+  logger: makeConsoleMock(),
+  prepare: vi.fn(() => Promise.resolve()),
+  restoreOriginalState: vi.fn(() => Promise.resolve()),
+  restoreUnstagedChanges: vi.fn(() => Promise.resolve()),
   runTasks: vi.fn(() => Promise.resolve()),
   updateIndex: vi.fn(() => Promise.resolve()),
-  restoreUnstagedChanges: vi.fn(() => Promise.resolve()),
-  restoreOriginalState: vi.fn(() => Promise.resolve()),
-  cleanup: vi.fn(() => Promise.resolve()),
 }
 
 vi.mock('../../lib/gitWorkflow.js', () => ({
@@ -66,6 +67,7 @@ describe('runAll', () => {
 
   beforeAll(() => {
     console = makeConsoleMock()
+    mockGitWorkflow.logger = console
     vi.clearAllMocks()
   })
 
@@ -167,7 +169,6 @@ describe('runAll', () => {
 
     mockGitWorkflow.prepare.mockImplementationOnce((ctx) => {
       ctx.errors.add(GitError)
-      throw new Error('test')
     })
 
     await expect(runAll({})).rejects.toThrow('lint-staged failed')
@@ -192,7 +193,48 @@ describe('runAll', () => {
 
     await expect(runAll({})).rejects.toThrow('lint-staged failed')
 
-    expect(console.printHistory()).toMatch(/"data":"SKIPPED".*Staging changes from tasks/)
+    expect(console.printHistory()).toMatch('Skipped staging changes from tasks')
+  })
+
+  it('should skip restoring untracked files if there are errors during a task', async ({
+    expect,
+  }) => {
+    expect.assertions(2)
+
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
+    searchConfigs.mockImplementationOnce(async () => ({
+      '': { '*.js': 'echo "sample"' },
+    }))
+
+    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
+      ctx.errors.add(TaskError)
+      return task.newListr(listrTasks)
+    })
+
+    await expect(runAll({ hideAll: true })).rejects.toThrow('lint-staged failed')
+
+    expect(console.printHistory()).toMatch('Skipped restoring untracked files')
+  })
+
+  it('should skip reverting to original state if there are errors during a task', async ({
+    expect,
+  }) => {
+    expect.assertions(2)
+
+    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
+    searchConfigs.mockImplementationOnce(async () => ({
+      '': { '*.js': 'echo "sample"' },
+    }))
+
+    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
+      ctx.errors.add(TaskError)
+      ctx.errors.add(GitError)
+      return task.newListr(listrTasks)
+    })
+
+    await expect(runAll({})).rejects.toThrow('lint-staged failed')
+
+    expect(console.printHistory()).toMatch('Skipped reverting to original state because of errors')
   })
 
   it('should skip tasks and restore state if terminated', async ({ expect }) => {
@@ -219,9 +261,7 @@ describe('runAll', () => {
 
     await expect(runAll({})).rejects.toThrow('lint-staged failed')
 
-    expect(console.printHistory()).toMatch(
-      /"data":"COMPLETED".*Reverting to original state because of errors/
-    )
+    expect(mockGitWorkflow.restoreOriginalState).toHaveBeenCalled()
   })
 
   it('should resolve matched files to default cwd with multiple configs', async ({ expect }) => {

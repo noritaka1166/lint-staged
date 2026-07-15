@@ -1,5 +1,6 @@
 import path from 'node:path'
 
+import makeConsoleMock from 'consolemock'
 import { describe, it, vi } from 'vitest'
 
 import { writeFile } from '../../lib/file.js'
@@ -7,6 +8,7 @@ import { GitWorkflow } from '../../lib/gitWorkflow.js'
 import { normalizePath } from '../../lib/normalizePath.js'
 import { getInitialState } from '../../lib/state.js'
 import {
+  ApplyEmptyCommitError,
   GetBackupStashError,
   GitError,
   HideUnstagedChangesError,
@@ -25,6 +27,7 @@ describe('gitWorkflow', () => {
       'should handle errors',
       withGitIntegration(async ({ cwd, expect }) => {
         const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
@@ -36,7 +39,33 @@ describe('gitWorkflow', () => {
         gitWorkflow.getHiddenFilepath = () => {
           throw new Error('test')
         }
-        await expect(gitWorkflow.prepare(ctx, false)).rejects.toThrow('test')
+
+        await gitWorkflow.prepare(ctx)
+
+        expect(ctx.errors).toBeInstanceOf(Set)
+        expect(ctx.errors.has(GitError)).toBe(true)
+      })
+    )
+
+    it(
+      'should handle errors when should backup',
+      withGitIntegration(async ({ cwd, expect }) => {
+        const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+
+        vi.doMock('tinyexec', () => Promise.reject({}))
+        const ctx = getInitialState()
+        ctx.shouldBackup = true
+        // mock a simple failure
+        gitWorkflow.getUnstagedFiles = () => ['foo']
+        gitWorkflow.getHiddenFilepath = () => {
+          throw new Error('test')
+        }
+
+        await gitWorkflow.prepare(ctx)
 
         expect(ctx.errors).toBeInstanceOf(Set)
         expect(ctx.errors.has(GitError)).toBe(true)
@@ -49,12 +78,16 @@ describe('gitWorkflow', () => {
       'should handle errors',
       withGitIntegration(async ({ cwd, expect }) => {
         const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
 
         const ctx = getInitialState()
-        await expect(gitWorkflow.cleanup(ctx)).rejects.toThrow(
+
+        await gitWorkflow.cleanup(ctx)
+
+        expect(gitWorkflow.logger.printHistory()).toMatch(
           'lint-staged automatic backup is missing!'
         )
 
@@ -70,6 +103,7 @@ describe('gitWorkflow', () => {
       'should return null when no unstaged changes',
       withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
         const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
@@ -86,6 +120,7 @@ describe('gitWorkflow', () => {
       'should return unquoted files',
       withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
         const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
@@ -107,6 +142,7 @@ describe('gitWorkflow', () => {
       'should return only partially changes files',
       withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
         const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
@@ -126,6 +162,7 @@ describe('gitWorkflow', () => {
       'should include to and from for renamed files',
       withGitIntegration(async ({ appendFile, cwd, execGit, expect }) => {
         const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
@@ -148,6 +185,7 @@ describe('gitWorkflow', () => {
       'should handle errors',
       withGitIntegration(async ({ cwd, expect }) => {
         const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
@@ -155,9 +193,8 @@ describe('gitWorkflow', () => {
         const totallyRandom = `totally_random_file-${Date.now().toString()}`
         gitWorkflow.unstagedFiles = [totallyRandom]
         const ctx = getInitialState()
-        await expect(gitWorkflow.hidePartiallyStagedChanges(ctx)).rejects.toThrow(
-          `pathspec '${totallyRandom}' did not match any file(s) known to git`
-        )
+
+        await gitWorkflow.hidePartiallyStagedChanges(ctx)
 
         expect(ctx.errors).toBeInstanceOf(Set)
         expect(ctx.errors.has(HideUnstagedChangesError)).toBe(true)
@@ -168,7 +205,10 @@ describe('gitWorkflow', () => {
     it(
       'should checkout renamed file when hiding changes',
       withGitIntegration(async ({ appendFile, cwd, execGit, expect, readFile }) => {
+        const logger = makeConsoleMock()
+
         const gitWorkflow = new GitWorkflow({
+          logger,
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
         })
@@ -179,6 +219,7 @@ describe('gitWorkflow', () => {
 
         gitWorkflow.unstagedFiles = await gitWorkflow.getUnstagedFiles(true)
         const ctx = getInitialState()
+
         await gitWorkflow.hidePartiallyStagedChanges(ctx)
 
         expect(await readFile('TEST.md')).toStrictEqual(origContent)
@@ -200,13 +241,16 @@ describe('gitWorkflow', () => {
         vi.stubEnv('GIT_INDEX_FILE', normalizePath(gitIndexFile))
 
         const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
           matchedFileChunks: [[]],
         })
         const ctx = getInitialState()
 
-        await expect(gitWorkflow.updateIndex(ctx)).rejects.toThrow('Prevented an empty git commit!')
+        await gitWorkflow.updateIndex(ctx)
+
+        expect(ctx.errors.has(ApplyEmptyCommitError)).toBe(true)
 
         vi.unstubAllEnvs()
       })
@@ -225,15 +269,39 @@ describe('gitWorkflow', () => {
         vi.stubEnv('GIT_INDEX_FILE', normalizePath(gitIndexFile))
 
         const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
           matchedFileChunks: [[]],
         })
         const ctx = getInitialState()
 
-        await expect(gitWorkflow.updateIndex(ctx)).rejects.toThrow('Prevented an empty git commit!')
+        await gitWorkflow.updateIndex(ctx)
+
+        expect(ctx.errors.has(ApplyEmptyCommitError)).toBe(true)
 
         vi.unstubAllEnvs()
+      })
+    )
+
+    it(
+      'should handle errors',
+      withGitIntegration(async ({ cwd, expect }) => {
+        const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+          matchedFileChunks: [[]],
+        })
+
+        // bad diff to produce error
+        gitWorkflow.diff = 'foobar'
+
+        const ctx = getInitialState()
+
+        await gitWorkflow.updateIndex(ctx)
+
+        expect(ctx.errors.has(GitError)).toBe(true)
       })
     )
   })
@@ -243,6 +311,7 @@ describe('gitWorkflow', () => {
       'should handle error when restoring merge state fails',
       withGitIntegration(async ({ cwd, expect }) => {
         const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
           matchedFileChunks: [[]],
@@ -251,9 +320,7 @@ describe('gitWorkflow', () => {
         gitWorkflow.mergeHeadBuffer = true
         writeFile.mockImplementation(() => Promise.reject('test'))
         const ctx = getInitialState()
-        await expect(gitWorkflow.restoreMergeStatus(ctx)).rejects.toThrow(
-          'Merge state could not be restored due to an error!'
-        )
+        await expect(gitWorkflow.restoreMergeStatus(ctx)).rejects.toThrow()
 
         expect(ctx.errors).toBeInstanceOf(Set)
         expect(ctx.errors.has(GitError)).toBe(true)
@@ -267,17 +334,16 @@ describe('gitWorkflow', () => {
       'should handle error when restoring fails',
       withGitIntegration(async ({ cwd, expect }) => {
         const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
           matchedFileChunks: [[]],
         })
 
         const ctx = getInitialState()
-        await expect(gitWorkflow.restoreUntrackedFiles(ctx)).rejects.toThrow(
-          'Untracked files could not be restored!'
-        )
 
-        expect(ctx.errors).toBeInstanceOf(Set)
+        await gitWorkflow.restoreUntrackedFiles(ctx)
+
         expect(ctx.errors.has(RestoreUnstagedChangesError)).toBe(true)
         expect(ctx.errors.has(GitError)).toBe(true)
       })
