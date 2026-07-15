@@ -1,6 +1,7 @@
 import makeConsoleMock from 'consolemock'
 import { describe, test } from 'vitest'
 
+import * as figures from '../../lib/figures.js'
 import lintStaged from '../../lib/index.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
@@ -34,7 +35,7 @@ describe('lint-staged', () => {
       // Lint-staged failed because commit diff contains ugly file
       expect(passed).toEqual(false)
 
-      expect(console.printHistory()).toMatch('prettier --list-different [FAILED]')
+      expect(console.printHistory()).toMatch(`${figures.error} prettier --list-different`)
     })
   )
 
@@ -150,7 +151,7 @@ describe('lint-staged', () => {
       )
 
       expect(passed).toEqual(true)
-      expect(console.printHistory()).toMatch('Running tasks for staged files...')
+      expect(console.printHistory()).toMatch('Running tasks for staged files…')
       expect(console.printHistory()).not.toMatch('fatal: pathspec')
       expect(console.printHistory()).not.toMatch('did not match any files')
     })

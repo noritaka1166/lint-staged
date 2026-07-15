@@ -3,6 +3,7 @@ import path from 'node:path'
 
 import { describe, test } from 'vitest'
 
+import * as figures from '../../lib/figures.js'
 import * as configFixtures from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
@@ -87,7 +88,7 @@ describe('lint-staged', () => {
 
       // Run lint-staged with --no-stash
       await expect(gitCommit({ lintStaged: { stash: false } })).rejects.toThrow(
-        'prettier --write [FAILED]'
+        `${figures.error} prettier --write`
       )
 
       // Something was wrong, so the commit was aborted

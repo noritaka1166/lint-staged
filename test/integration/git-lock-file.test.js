@@ -43,7 +43,7 @@ describe('lint-staged', () => {
               },
             },
           })
-        ).rejects.toThrow(".git/index.lock': File exists")
+        ).rejects.toThrow('lint-staged failed due to a git error')
 
         // Something was wrong so new commit wasn't created
         expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')

@@ -15,6 +15,7 @@ vi.mock('../../lib/gitWorkflow.js', () => ({
       prepare = vi.fn()
       updateIndex = vi.fn()
       cleanup = vi.fn()
+      runTasks = vi.fn()
     }
   ),
 }))

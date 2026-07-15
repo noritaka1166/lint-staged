@@ -1,5 +1,6 @@
 import { describe, test } from 'vitest'
 
+import * as figures from '../../lib/figures.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { addConfigFileSerializer } from './__utils__/addConfigFileSerializer.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
@@ -38,9 +39,9 @@ describe('lint-staged --continue-on-error', () => {
         throw 'Lint-staged succeeded'
       } catch (error) {
         expect(error.toString()).toMatch('Reverting to original state because of errors')
-        expect(error.toString()).toMatch('prettier --list-different [FAILED]')
-        expect(error.toString()).toMatch(/COMPLETED.*Running second command/)
-        expect(error.toString()).toMatch(/COMPLETED.*Processing markdown/)
+        expect(error.toString()).toMatch(`${figures.error} prettier --list-different`)
+        expect(error.toString()).toMatch(`${figures.done} echo "Running second command"`)
+        expect(error.toString()).toMatch(`${figures.done} echo "Processing markdown"`)
       }
 
       // Repo should be returned to original state
@@ -72,9 +73,9 @@ describe('lint-staged --continue-on-error', () => {
       // Run lint-staged with --continue-on-error - should succeed
       const result = await gitCommit({ lintStaged: { continueOnError: true } })
 
-      expect(result).toMatch(/COMPLETED.*prettier --list-different/)
-      expect(result).toMatch(/COMPLETED.*Running second command/)
-      expect(result).toMatch(/COMPLETED.*Processing markdown/)
+      expect(result).toMatch(`${figures.done} prettier --list-different`)
+      expect(result).toMatch(`${figures.done} echo "Running second command"`)
+      expect(result).toMatch(`${figures.done} echo "Processing markdown"`)
 
       // A new commit should be created
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
@@ -111,8 +112,8 @@ describe('lint-staged --continue-on-error', () => {
         throw 'Lint-staged succeeded'
       } catch (error) {
         expect(error.toString()).toMatch('Reverting to original state because of errors')
-        expect(error.toString()).toMatch('prettier --list-different [FAILED]')
-        expect(error.toString()).not.toMatch('This should not run')
+        expect(error.toString()).toMatch(`${figures.error} prettier --list-different`)
+        expect(error.toString()).toMatch(`${figures.cancelled} echo "This should not run"`)
       }
 
       // Repo should be returned to original state

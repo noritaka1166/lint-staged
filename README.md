@@ -154,11 +154,7 @@ Change the working directory _lint-staged_ runs tasks in. Defaults to `process.c
 
 #### `--debug`
 
-Run in debug mode. When set, it does the following:
-
-- log additional information about staged files, commands being executed, location of binaries, etc.
-- uses [`verbose` renderer](https://listr2.kilic.dev/renderers/verbose-renderer/) for `listr2`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
-  (the [`verbose` renderer](https://listr2.kilic.dev/renderers/verbose-renderer/) can also be activated by setting the `TERM=dumb` or `NODE_ENV=test` environment variables)
+Log additional information about staged files, commands being executed, location of binaries, etc.
 
 #### `--diff`
 

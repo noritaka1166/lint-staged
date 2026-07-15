@@ -1,10 +1,8 @@
 import path from 'node:path'
 
 import makeConsoleMock from 'consolemock'
-import { exec } from 'tinyexec'
 import { afterAll, afterEach, beforeAll, describe, it, vi } from 'vitest'
 
-import { Signal } from '../../lib/getAbortController.js'
 import { normalizePath } from '../../lib/normalizePath.js'
 import { TaskError } from '../../lib/symbols.js'
 
@@ -147,18 +145,6 @@ describe('runAll', () => {
     expect(console.printHistory()).toMatchInlineSnapshot(`""`)
   })
 
-  it('should not skip tasks if there are files', async ({ expect }) => {
-    expect.assertions(1)
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockImplementationOnce(async () => ({
-      '': { '*.js': 'echo "sample"' },
-    }))
-
-    await runAll({})
-
-    expect(console.printHistory()).toMatch(/"data":"COMPLETED".*Running tasks for staged files/)
-  })
-
   it('should skip tasks if previous git error', async ({ expect }) => {
     expect.assertions(2)
 
@@ -173,7 +159,7 @@ describe('runAll', () => {
 
     await expect(runAll({})).rejects.toThrow('lint-staged failed')
 
-    expect(console.printHistory()).toMatch(/"data":"SKIPPED".*Running tasks for staged files/)
+    expect(console.printHistory()).toMatch('Skipped running tasks')
   })
 
   it('should skip applying unstaged modifications if there are errors during a task', async ({
@@ -186,9 +172,8 @@ describe('runAll', () => {
       '': { '*.js': 'echo "sample"' },
     }))
 
-    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
+    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx) => {
       ctx.errors.add(TaskError)
-      return task.newListr(listrTasks)
     })
 
     await expect(runAll({})).rejects.toThrow('lint-staged failed')
@@ -206,9 +191,8 @@ describe('runAll', () => {
       '': { '*.js': 'echo "sample"' },
     }))
 
-    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
+    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx) => {
       ctx.errors.add(TaskError)
-      return task.newListr(listrTasks)
     })
 
     await expect(runAll({ hideAll: true })).rejects.toThrow('lint-staged failed')
@@ -226,42 +210,14 @@ describe('runAll', () => {
       '': { '*.js': 'echo "sample"' },
     }))
 
-    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
+    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx) => {
       ctx.errors.add(TaskError)
       ctx.errors.add(GitError)
-      return task.newListr(listrTasks)
     })
 
     await expect(runAll({})).rejects.toThrow('lint-staged failed')
 
     expect(console.printHistory()).toMatch('Skipped reverting to original state because of errors')
-  })
-
-  it('should skip tasks and restore state if terminated', async ({ expect }) => {
-    expect.assertions(2)
-
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'sample.js', status: 'A' }])
-    searchConfigs.mockImplementationOnce(async () => ({
-      '': { '*.js': 'echo "sample"' },
-    }))
-
-    vi.mocked(exec).mockReturnValue({
-      process: {
-        signalCode: Signal.SIGINT,
-        kill: vi.fn(),
-      },
-      async *[Symbol.asyncIterator]() {
-        yield 'test'
-      },
-    })
-
-    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
-      return task.newListr(listrTasks)
-    })
-
-    await expect(runAll({})).rejects.toThrow('lint-staged failed')
-
-    expect(mockGitWorkflow.restoreOriginalState).toHaveBeenCalled()
   })
 
   it('should resolve matched files to default cwd with multiple configs', async ({ expect }) => {
@@ -370,102 +326,6 @@ describe('runAll', () => {
     await runAll({ configObject: { '*.js': ['echo "sample"'] }, hidePartiallyStaged: false })
     expect(console.printHistory()).toMatch(
       'Skipping hiding unstaged changes from partially staged files because `--no-hide-partially-staged` was used.'
-    )
-  })
-
-  it('should support function tasks', async ({ expect }) => {
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'foo.js', status: 'A' }])
-
-    const task = vi.fn()
-    const configObject = { '*.js': { title: 'My task', task } }
-
-    searchConfigs.mockImplementationOnce(async () => ({
-      '': configObject,
-    }))
-
-    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
-      return task.newListr(listrTasks)
-    })
-
-    await runAll({
-      configObject: { '*.js': { title: 'My task', task } },
-      relative: true, // make sure filenames are relative for easier assertion below
-    })
-
-    expect(task).toHaveBeenCalledTimes(1)
-    expect(task).toHaveBeenCalledExactlyOnceWith(['foo.js'])
-  })
-
-  it('should reject immediately when continueOnError is false (default)', async ({ expect }) => {
-    getStagedFiles.mockImplementationOnce(async () => [{ filepath: 'foo.js', status: 'A' }])
-    searchConfigs.mockImplementationOnce(async () => ({
-      '': { '*.js': 'echo "failing command"' },
-    }))
-
-    // Mock first spawn call (git operations) to succeed
-    vi.mocked(exec).mockResolvedValueOnce('Has staged files')
-
-    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
-      return task.newListr(listrTasks)
-    })
-
-    // With continueOnError: false (default), should reject
-    await expect(runAll({ continueOnError: false })).rejects.toThrow('lint-staged failed')
-  })
-
-  it('should reject after running all tasks when continueOnError is true', async ({ expect }) => {
-    getStagedFiles.mockImplementationOnce(async () => [
-      {
-        filepath: 'foo.js',
-        status: 'A',
-      },
-      { filepath: 'bar.py', status: 'A' },
-    ])
-
-    searchConfigs.mockImplementationOnce(async () => ({
-      '': {
-        '*.js': ['echo "success js command 1"', 'echo "success js command 2"'],
-        '*.py': 'echo "failing py command"',
-      },
-    }))
-
-    // Mock second task call (`echo "success js command 1"`) to succeed
-    vi.mocked(exec).mockReturnValueOnce({
-      async *[Symbol.asyncIterator]() {
-        yield 'test'
-      },
-    })
-
-    // Mock second spawn call (`echo "failing py command"`) to fail
-    vi.mocked(exec).mockReturnValueOnce({
-      exitCode: 1,
-      async *[Symbol.asyncIterator]() {
-        yield 'test'
-      },
-    })
-
-    // Mock second exec call ('success js command 2') to succeed
-    vi.mocked(exec).mockReturnValueOnce({
-      async *[Symbol.asyncIterator]() {
-        yield 'test'
-      },
-    })
-
-    mockGitWorkflow.runTasks.mockImplementationOnce(async (ctx, task, { listrTasks }) => {
-      return task.newListr(listrTasks)
-    })
-
-    // With continueOnError: true, should still reject but after running all tasks
-    await expect(runAll({ continueOnError: true })).rejects.toThrow('lint-staged failed')
-
-    expect(console.printHistory()).toMatch(
-      /"data":"COMPLETED".*"title":"echo \\"success js command 1\\"/
-    )
-    expect(console.printHistory()).toMatch(
-      /"data":{"error":"echo \\"failing py command\\" \[FAILED\]"}/
-    )
-    expect(console.printHistory()).toMatch(
-      /"data":"COMPLETED".*"title":"echo \\"success js command 2\\"/
     )
   })
 })

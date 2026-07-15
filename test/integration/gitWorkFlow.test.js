@@ -227,6 +227,67 @@ describe('gitWorkflow', () => {
     )
   })
 
+  describe('runTasks', () => {
+    it(
+      'should handle errors for staged files',
+      withGitIntegration(async ({ cwd, expect }) => {
+        const logger = makeConsoleMock()
+        const gitWorkflow = new GitWorkflow({
+          logger,
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+        const error = new Error('test')
+        const tasks = [
+          {
+            skip: () => {
+              throw error
+            },
+          },
+        ]
+
+        await expect(
+          gitWorkflow.runTasks(getInitialState(), tasks, {
+            abortController: new AbortController(),
+            concurrent: true,
+          })
+        ).rejects.toBe(error)
+
+        expect(logger.printHistory()).toMatch('Failed to run tasks for staged files')
+      })
+    )
+
+    it(
+      'should handle errors for changed files',
+      withGitIntegration(async ({ cwd, expect }) => {
+        const logger = makeConsoleMock()
+        const gitWorkflow = new GitWorkflow({
+          diff: 'HEAD..main',
+          logger,
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+        const error = new Error('test')
+        const tasks = [
+          {
+            skip: () => {
+              throw error
+            },
+          },
+        ]
+
+        await expect(
+          gitWorkflow.runTasks(getInitialState(), tasks, {
+            abortController: new AbortController(),
+            concurrent: true,
+          })
+        ).rejects.toBe(error)
+
+        expect(logger.printHistory()).toMatch('Failed to run tasks for changed files')
+      })
+    )
+  })
+
   describe('updateIndex', () => {
     it(
       "should not override GIT_INDEX_FILE value when it's the default value",
