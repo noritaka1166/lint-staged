@@ -14,7 +14,7 @@ describe('lint-staged', () => {
       await writeFile(
         '.lintstagedrc.json',
         JSON.stringify({
-          '*.js': ['prettier --write', 'node'],
+          '*.js': ['oxfmt --write', 'node'],
         })
       )
 
@@ -36,7 +36,7 @@ describe('lint-staged', () => {
       await writeFile(
         '.lintstagedrc.json',
         JSON.stringify({
-          '*.js': ['prettier --write', 'node'],
+          '*.js': ['oxfmt --write', 'node'],
         })
       )
 

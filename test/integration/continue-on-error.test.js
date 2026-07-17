@@ -16,14 +16,14 @@ describe('lint-staged --continue-on-error', () => {
         '.lintstagedrc.json',
         JSON.stringify({
           '*.js': [
-            'prettier --list-different', // This will fail on ugly files
+            'oxfmt --list-different', // This will fail on ugly files
             'echo "Running second command"', // This should still run with --continue-on-error
           ],
           '*.md': 'echo "Processing markdown"', // This should also run
         })
       )
 
-      // Stage files that will cause prettier to fail
+      // Stage files that will cause oxfmt to fail
       await writeFile('test.js', fileFixtures.uglyJS)
       await execGit(['add', 'test.js'])
 
@@ -39,7 +39,7 @@ describe('lint-staged --continue-on-error', () => {
         throw 'Lint-staged succeeded'
       } catch (error) {
         expect(error.toString()).toMatch('Reverting to original state because of errors')
-        expect(error.toString()).toMatch(`${figures.error} prettier --list-different`)
+        expect(error.toString()).toMatch(`${figures.error} oxfmt --list-different`)
         expect(error.toString()).toMatch(`${figures.done} echo "Running second command"`)
         expect(error.toString()).toMatch(`${figures.done} echo "Processing markdown"`)
       }
@@ -58,7 +58,7 @@ describe('lint-staged --continue-on-error', () => {
       await writeFile(
         '.lintstagedrc.json',
         JSON.stringify({
-          '*.js': ['prettier --list-different', 'echo "Running second command"'],
+          '*.js': ['oxfmt --list-different', 'echo "Running second command"'],
           '*.md': 'echo "Processing markdown"',
         })
       )
@@ -73,7 +73,7 @@ describe('lint-staged --continue-on-error', () => {
       // Run lint-staged with --continue-on-error - should succeed
       const result = await gitCommit({ lintStaged: { continueOnError: true } })
 
-      expect(result).toMatch(`${figures.done} prettier --list-different`)
+      expect(result).toMatch(`${figures.done} oxfmt --list-different`)
       expect(result).toMatch(`${figures.done} echo "Running second command"`)
       expect(result).toMatch(`${figures.done} echo "Processing markdown"`)
 
@@ -91,13 +91,13 @@ describe('lint-staged --continue-on-error', () => {
         '.lintstagedrc.json',
         JSON.stringify({
           '*.js': [
-            'prettier --list-different', // This will fail
+            'oxfmt --list-different', // This will fail
             'echo "This should not run"', // This should NOT run without --continue-on-error
           ],
         })
       )
 
-      // Stage files that will cause prettier to fail
+      // Stage files that will cause oxfmt to fail
       await writeFile('test.js', fileFixtures.uglyJS)
       await execGit(['add', 'test.js'])
 
@@ -112,7 +112,7 @@ describe('lint-staged --continue-on-error', () => {
         throw 'Lint-staged succeeded'
       } catch (error) {
         expect(error.toString()).toMatch('Reverting to original state because of errors')
-        expect(error.toString()).toMatch(`${figures.error} prettier --list-different`)
+        expect(error.toString()).toMatch(`${figures.error} oxfmt --list-different`)
         expect(error.toString()).toMatch(`${figures.cancelled} echo "This should not run"`)
       }
 

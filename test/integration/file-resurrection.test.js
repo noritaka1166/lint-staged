@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { describe, test } from 'vitest'
 
-import { prettierListDifferent } from './__fixtures__/configs.js'
+import { oxfmtListDifferent } from './__fixtures__/configs.js'
 import { prettyJS, uglyJS } from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
@@ -20,7 +20,7 @@ describe('lint-staged', () => {
   test(
     'does not resurrect removed files due to git bug when tasks pass',
     withGitIntegration(async ({ cwd, execGit, expect, gitCommit, removeFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(oxfmtListDifferent))
 
       await removeFile('README.md') // Remove file from previous commit
       await writeFile('test.js', prettyJS)
@@ -36,7 +36,7 @@ describe('lint-staged', () => {
     'does not resurrect removed files in complex case',
     withGitIntegration(
       async ({ cwd, execGit, expect, gitCommit, readFile, removeFile, writeFile }) => {
-        await writeFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+        await writeFile('.lintstagedrc.json', JSON.stringify(oxfmtListDifferent))
 
         // Add file to index, and remove it from disk
         await writeFile('test.js', prettyJS)
@@ -74,7 +74,7 @@ describe('lint-staged', () => {
   test(
     'does not resurrect removed files due to git bug when tasks fail',
     withGitIntegration(async ({ cwd, execGit, expect, gitCommit, removeFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(oxfmtListDifferent))
 
       await removeFile('README.md') // Remove file from previous commit
       await writeFile('test.js', uglyJS)

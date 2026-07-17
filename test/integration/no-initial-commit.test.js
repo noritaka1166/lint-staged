@@ -1,6 +1,6 @@
 import { describe, test } from 'vitest'
 
-import { prettierListDifferent } from './__fixtures__/configs.js'
+import { oxfmtListDifferent } from './__fixtures__/configs.js'
 import { prettyJS } from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
@@ -9,7 +9,7 @@ describe('lint-staged', () => {
     'skips backup when run on an empty git repo without an initial commit',
     withGitIntegration(
       async ({ appendFile, execGit, expect, gitCommit, readFile, cwd }) => {
-        await appendFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+        await appendFile('.lintstagedrc.json', JSON.stringify(oxfmtListDifferent))
 
         await appendFile('test.js', prettyJS, cwd)
         await execGit(['add', 'test.js'], { cwd })

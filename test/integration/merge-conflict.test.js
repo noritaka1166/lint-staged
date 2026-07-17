@@ -4,7 +4,7 @@ import path from 'node:path'
 import { describe, test } from 'vitest'
 
 import lintStaged from '../../lib/index.js'
-import { prettierListDifferent, prettierWrite } from './__fixtures__/configs.js'
+import { oxfmtListDifferent, oxfmtWrite } from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
@@ -20,7 +20,7 @@ describe('lint-staged', () => {
         // Create one branch
         await execGit(['checkout', '-b', 'branch-a'])
         await appendFile('test.js', fileInBranchA)
-        await appendFile('.lintstagedrc.json', JSON.stringify(prettierWrite))
+        await appendFile('.lintstagedrc.json', JSON.stringify(oxfmtWrite))
         await execGit(['add', '.'])
 
         await gitCommit({ gitCommit: ['-m commit a'] })
@@ -32,7 +32,7 @@ describe('lint-staged', () => {
         // Create another branch
         await execGit(['checkout', '-b', 'branch-b'])
         await appendFile('test.js', fileInBranchB)
-        await appendFile('.lintstagedrc.json', JSON.stringify(prettierWrite))
+        await appendFile('.lintstagedrc.json', JSON.stringify(oxfmtWrite))
         await execGit(['add', '.'])
         await gitCommit({ gitCommit: ['-m commit b'] })
         expect(await readFile('test.js')).toEqual(fileInBranchBFixed)
@@ -101,7 +101,7 @@ describe('lint-staged', () => {
       // Create one branch
       await execGit(['checkout', '-b', 'branch-a'])
       await appendFile('test.js', fileInBranchA)
-      await writeFile('.lintstagedrc.json', JSON.stringify(prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(oxfmtWrite))
       await execGit(['add', '.'])
 
       await gitCommit({ gitCommit: ['-m commit a'] })
@@ -112,7 +112,7 @@ describe('lint-staged', () => {
 
       // Create another branch
       await execGit(['checkout', '-b', 'branch-b'])
-      await writeFile('.lintstagedrc.json', JSON.stringify(prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(oxfmtWrite))
       await appendFile('test.js', fileInBranchB)
       await execGit(['add', '.'])
 
@@ -147,7 +147,7 @@ describe('lint-staged', () => {
 
       expect(await execGit(['status'])).toMatch('All conflicts fixed but you are still merging')
 
-      await writeFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(oxfmtListDifferent))
 
       await expect(gitCommit()).rejects.toThrow('Reverting to original state because of errors')
 
@@ -173,7 +173,7 @@ describe('lint-staged', () => {
               '*.js': async () => {
                 const testFile = path.join(cwd, 'test.js')
                 fs.writeFileSync(testFile, Buffer.from(fileFixtures.invalidJS, 'binary'))
-                return `prettier --write ${testFile}`
+                return `oxfmt --write ${testFile}`
               },
             },
           },
@@ -236,8 +236,8 @@ describe('lint-staged', () => {
       await execGit(['add', '.'])
       await execGit(['commit', '-m', 'Local changes'])
 
-      // Enable prettier in local branch
-      await appendFile('.lintstagedrc.json', JSON.stringify(prettierWrite)) // enable prettier in local branch only
+      // Enable oxfmt in local branch
+      await appendFile('.lintstagedrc.json', JSON.stringify(oxfmtWrite)) // enable oxfmt in local branch only
       await execGit(['add', '.'])
       await execGit(['commit', '-m', 'Local changes'])
 
@@ -279,7 +279,7 @@ describe('lint-staged', () => {
 
       await gitCommit(['-m', 'Merge upstream'])
 
-      // Verify only files different from upstream had prettier run
+      // Verify only files different from upstream had oxfmt run
       expect(await readFile('newFileConflictMergeLocal.js')).toEqual(prettyMergedContent)
       expect(await readFile('modifiedFileConflictMergeLocal.js')).toEqual(prettyMergedContent)
       expect(await readFile('newFileIndexOnly.js')).toEqual(prettyLocalContent)

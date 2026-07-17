@@ -7,8 +7,8 @@ import { withGitIntegration } from './__utils__/withGitIntegration.js'
 describe('lint-staged', () => {
   const getQuotePathTest = (state) =>
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      // Run lint-staged with `prettier --write` and commit pretty files
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      // Run lint-staged with `oxfmt --write` and commit pretty files
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       await execGit(['config', 'core.quotepath', state])
 
@@ -41,10 +41,10 @@ describe('lint-staged', () => {
       // expect(await readFile('👋.js')).toEqual(fileFixtures.prettyJS)
     })
 
-  // eslint-disable-next-line vitest/expect-expect
+  // oxlint-disable-next-line vitest/expect-expect
   test('handles files with non-ascii characters when core.quotepath is on', getQuotePathTest('on'))
 
-  // eslint-disable-next-line vitest/expect-expect
+  // oxlint-disable-next-line vitest/expect-expect
   test(
     'handles files with non-ascii characters when core.quotepath is off',
     getQuotePathTest('off')

@@ -1,6 +1,6 @@
 import { describe, test } from 'vitest'
 
-import { prettierListDifferent } from './__fixtures__/configs.js'
+import { oxfmtListDifferent } from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
@@ -8,7 +8,7 @@ describe('lint-staged', () => {
   test(
     'ignores untracked files',
     withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile, writeFile }) => {
-      await appendFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+      await appendFile('.lintstagedrc.json', JSON.stringify(oxfmtListDifferent))
 
       // Stage pretty file
       await appendFile('test.js', fileFixtures.prettyJS)
@@ -19,7 +19,7 @@ describe('lint-staged', () => {
       await appendFile('.gitattributes', 'binary\n')
       await writeFile('binary', Buffer.from('Hello, World!', 'binary'))
 
-      // Run lint-staged with `prettier --list-different` and commit pretty file
+      // Run lint-staged with `oxfmt --list-different` and commit pretty file
       await gitCommit()
 
       // Nothing is wrong, so a new commit is created
@@ -34,7 +34,7 @@ describe('lint-staged', () => {
   test(
     'ingores untracked files when task fails',
     withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile, writeFile }) => {
-      await appendFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+      await appendFile('.lintstagedrc.json', JSON.stringify(oxfmtListDifferent))
 
       // Stage unfixable file
       await appendFile('test.js', fileFixtures.invalidJS)
@@ -45,7 +45,7 @@ describe('lint-staged', () => {
       await appendFile('.gitattributes', 'binary\n')
       await writeFile('binary', Buffer.from('Hello, World!', 'binary'))
 
-      // Run lint-staged with `prettier --list-different` and commit pretty file
+      // Run lint-staged with `oxfmt --list-different` and commit pretty file
       await expect(gitCommit()).rejects.toThrow()
 
       // Something was wrong so the repo is returned to original state

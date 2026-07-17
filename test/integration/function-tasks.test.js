@@ -16,7 +16,7 @@ describe('lint-staged', () => {
           config: {
             '*.js': {
               title: 'function task title',
-              task: (filenames) => `prettier --write ${filenames.join(' ')}`,
+              task: (filenames) => `oxfmt --write ${filenames.join(' ')}`,
             },
           },
         },

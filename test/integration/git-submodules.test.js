@@ -13,7 +13,7 @@ describe('lint-staged', () => {
       async ({ appendFile, cwd, execGit, expect, gitCommit, readFile, removeFile }) => {
         await appendFile(
           '.lintstagedrc.json',
-          JSON.stringify({ '*': 'prettier --list-different --ignore-unknown' })
+          JSON.stringify({ '*': 'oxfmt --list-different --no-error-on-unmatched-pattern' })
         )
         await execGit(['add', '.'])
         await execGit(['commit', '-m initial commit'])
@@ -58,7 +58,7 @@ describe('lint-staged', () => {
         await appendFile('test.js', prettyJS, submoduleDir)
         await execGit(['add', 'test.js'], { cwd: submoduleDir })
 
-        // Run lint-staged with `prettier --list-different` and commit pretty file
+        // Run lint-staged with `oxfmt --list-different` and commit pretty file
         await gitCommit(undefined, submoduleDir)
 
         // Nothing is wrong, so a new commit is created

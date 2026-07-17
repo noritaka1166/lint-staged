@@ -11,7 +11,7 @@ describe('lint-staged', () => {
       await writeFile(
         '.lintstagedrc.json',
         JSON.stringify({
-          '*.js': 'prettier --list-different',
+          '*.js': 'oxfmt --list-different',
           '*.{js,ts}': 'node -e "new Promise(resolve => setTimeout(resolve, 100_000))"',
         })
       )

@@ -36,12 +36,12 @@ Simpler but more explicit output:
 ✔ Done backing up original state (35b38ed1)!
 ⋯ Running tasks for staged files…
     *.js — 1 file
-      ⋯ eslint --fix
+      ⋯ oxlint --fix
     *.{json,md} — 1 file
-      ⋯ prettier --write
+      ⋯ oxfmt --write
 
-✔ prettier --write
-✔ eslint --fix
+✔ oxfmt --write
+✔ oxlint --fix
 
 ✔ Done running tasks for staged files!
 ⋯ Staging changes from tasks…

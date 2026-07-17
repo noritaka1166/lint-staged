@@ -8,7 +8,7 @@ describe('lint-staged', () => {
   test(
     'skips hiding unstaged changes from partially staged files with --no-hide-partially-staged',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       // Stage ugly file
       await writeFile('test.js', fileFixtures.uglyJS)

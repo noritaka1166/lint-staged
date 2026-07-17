@@ -2,7 +2,7 @@ import path from 'node:path'
 
 import { describe, test } from 'vitest'
 
-import { prettierWrite } from './__fixtures__/configs.js'
+import { oxfmtWrite } from './__fixtures__/configs.js'
 import { prettyJS, uglyJS } from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
@@ -12,7 +12,7 @@ describe('lint-staged', () => {
     withGitIntegration(async ({ cwd, execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('file.js', uglyJS)
       await writeFile('deeper/file.js', uglyJS)
-      await writeFile('deeper/.lintstagedrc.json', JSON.stringify(prettierWrite))
+      await writeFile('deeper/.lintstagedrc.json', JSON.stringify(oxfmtWrite))
       await execGit(['add', '.'])
 
       // Run lint-staged in "deeper/""
@@ -29,7 +29,7 @@ describe('lint-staged', () => {
     'not care about staged file outside current cwd without any other staged files',
     withGitIntegration(async ({ cwd, execGit, expect, gitCommit, readFile, writeFile }) => {
       await writeFile('file.js', uglyJS)
-      await writeFile('deeper/.lintstagedrc.json', JSON.stringify(prettierWrite))
+      await writeFile('deeper/.lintstagedrc.json', JSON.stringify(oxfmtWrite))
       await execGit(['add', '.'])
 
       // Run lint-staged in "deeper/""

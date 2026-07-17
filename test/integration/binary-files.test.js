@@ -7,7 +7,7 @@ describe('lint-staged', () => {
   test(
     'handles binary files',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
 
       // mark file as binary
       await writeFile('.gitattributes', 'binary\n')
@@ -16,7 +16,7 @@ describe('lint-staged', () => {
       await writeFile('binary', Buffer.from('Hello, World!', 'binary'))
       await execGit(['add', 'binary'])
 
-      // Run lint-staged with `prettier --list-different` and commit pretty file
+      // Run lint-staged with `oxfmt --list-different` and commit pretty file
       await gitCommit()
 
       // Nothing is wrong, so a new commit is created

@@ -3,7 +3,7 @@ import { describe, test } from 'vitest'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
-const MD_CONFIG = JSON.stringify({ '*.md': 'prettier --write' })
+const MD_CONFIG = JSON.stringify({ '*.md': 'oxfmt --write' })
 
 describe('lint-staged', () => {
   test(
@@ -15,7 +15,7 @@ describe('lint-staged', () => {
       await appendFile('README.md', '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n## Amended\n')
       await execGit(['add', 'README.md'])
 
-      // Run lint-staged with `prettier --write` and commit ugly amends
+      // Run lint-staged with `oxfmt --write` and commit ugly amends
       await gitCommit({ gitCommit: ['--amend', '--no-edit'] })
 
       // There's only a single newline because Prettier fixed it
@@ -41,7 +41,7 @@ describe('lint-staged', () => {
       await appendFile('README.md', '\n## Edited\n')
       await appendFile('test-untracked.js', fileFixtures.prettyJS)
 
-      // Run lint-staged with `prettier --list-different` and commit pretty file
+      // Run lint-staged with `oxfmt --list-different` and commit pretty file
       await gitCommit({ gitCommit: ['--amend', '--no-edit'] })
 
       // Nothing is wrong, so the commit was amended

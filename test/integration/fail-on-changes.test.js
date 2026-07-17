@@ -8,7 +8,7 @@ describe('lint-staged', () => {
   test(
     'should fail when tasks modify files and --fail-on-changes is used',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       // Stage ugly files
       await writeFile('test.js', fileFixtures.uglyJS)
@@ -17,7 +17,7 @@ describe('lint-staged', () => {
       expect.assertions(3)
 
       try {
-        // Run lint-staged with `prettier --write` so that it modifies files
+        // Run lint-staged with `oxfmt --write` so that it modifies files
         await gitCommit({
           lintStaged: {
             failOnChanges: true,
@@ -36,13 +36,13 @@ describe('lint-staged', () => {
   test(
     'should not fail when --fail-on-changes is used but tasks do not modify files',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       // Stage pretty files
       await writeFile('test.js', fileFixtures.prettyJS)
       await execGit(['add', 'test.js'])
 
-      // Run lint-staged with `prettier --write` so that it modifies files
+      // Run lint-staged with `oxfmt --write` so that it modifies files
       await gitCommit({
         lintStaged: {
           failOnChanges: true,
@@ -58,7 +58,7 @@ describe('lint-staged', () => {
   test(
     'should not fail with partially staged changes when --fail-on-changes is used but tasks do not modify files',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       // Stage pretty files
       await writeFile('test.js', fileFixtures.prettyJS)
@@ -67,7 +67,7 @@ describe('lint-staged', () => {
       // Edit file to ugly but keep unstaged
       await writeFile('test.js', fileFixtures.uglyJS)
 
-      // Run lint-staged with `prettier --write` so that it modifies files
+      // Run lint-staged with `oxfmt --write` so that it modifies files
       await gitCommit({
         lintStaged: {
           failOnChanges: true,
@@ -84,7 +84,7 @@ describe('lint-staged', () => {
   test(
     'should not fail with unstaged staged changes when --fail-on-changes is used but tasks do not modify files',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       // Stage pretty files
       await writeFile('test.js', fileFixtures.prettyJS)
@@ -93,7 +93,7 @@ describe('lint-staged', () => {
       // Add second ugly file but keep unstaged
       await writeFile('test2.js', fileFixtures.uglyJS)
 
-      // Run lint-staged with `prettier --write` so that it modifies files
+      // Run lint-staged with `oxfmt --write` so that it modifies files
       await gitCommit({
         lintStaged: {
           failOnChanges: true,
@@ -113,13 +113,13 @@ describe('lint-staged', () => {
   test(
     'should fail and revert when both --fail-on-changes and --revert are used',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       // Stage ugly files
       await writeFile('test.js', fileFixtures.uglyJS)
       await execGit(['add', 'test.js'])
 
-      // Run lint-staged with `prettier --write` so that it modifies files
+      // Run lint-staged with `oxfmt --write` so that it modifies files
       await expect(() =>
         gitCommit({
           lintStaged: {

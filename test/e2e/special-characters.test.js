@@ -8,14 +8,14 @@ import { withGitIntegration } from '../integration/__utils__/withGitIntegration.
 import { forkLintStagedBin } from './__utils__/forkLintStagedBin.js'
 
 describe('lint-staged', () => {
-  const REPO_ESLINT_CONFIG = path.join(getRepoRootPath(), '.eslintrc.json')
+  const REPO_OXLINT_CONFIG = path.join(getRepoRootPath(), '.oxlintrc.json')
 
   const BASIC_CONFIG = {
-    '*.js': [`eslint --config ${REPO_ESLINT_CONFIG} --fix`, 'prettier --write'],
+    '*.js': [`oxlint --config ${REPO_OXLINT_CONFIG} --fix`, 'oxfmt --write'],
   }
 
   test.each([['$test.js'], ['[test].js'], ['(test).js']])(
-    'supports running "%s" with ESLint + Prettier',
+    'supports running "%s" with oxlint + oxfmt',
     async (filename) =>
       ({ expect }) =>
         withGitIntegration(async ({ cwd, execGit, readFile, writeFile }) => {
