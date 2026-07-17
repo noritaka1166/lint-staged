@@ -152,8 +152,10 @@ describe('runParallelTasks', () => {
     await promise
 
     expect(pending).not.toHaveBeenCalled()
+    expect(logger.warn).toHaveBeenCalledWith(`${figures.cancelled} pending`)
+
     expect(later).not.toHaveBeenCalled()
-    expect(logger.warn).toHaveBeenCalledExactlyOnceWith(`${figures.cancelled} pending`)
+    expect(logger.warn).toHaveBeenCalledWith(`${figures.cancelled} later`)
   })
 
   it('should handle an empty task list', async ({ expect }) => {
