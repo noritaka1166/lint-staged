@@ -13,26 +13,20 @@ npm install --save-dev lint-staged # requires further setup
 ```
 $ git commit
 
-✔ Backed up original state in git stash (5bda95f)
-❯ Running tasks for staged files...
-  ❯ packages/frontend/.lintstagedrc.json — 1 file
-    ↓ *.js — no files [SKIPPED]
-    ❯ *.{json,md} — 1 file
-      ⠹ prettier --write
-  ↓ packages/backend/.lintstagedrc.json — 2 files
-    ❯ *.js — 2 files
-      ⠼ eslint --fix
-    ↓ *.{json,md} — no files [SKIPPED]
-◼ Updating Git index again...
-◼ Cleaning up temporary files...
+⋯ Backing up original state…
+✔ Done backing up original state (1f4c047d)!
+⋯ Running tasks for staged files…
+    *.{json,md} — 1 file
+      ⋯ prettier --write
+
+✔ prettier --write
+
+✔ Done running tasks for staged files!
+⋯ Staging changes from tasks…
+✔ Done staging changes from tasks!
+⋯ Cleaning up temporary files…
+✔ Done cleaning up temporary files!
 ```
-
-<details>
-<summary>See asciinema video</summary>
-
-[![asciicast](https://asciinema.org/a/199934.svg)](https://asciinema.org/a/199934)
-
-</details>
 
 > [!Tip]
 > Do you only want to check staged files for errors, but not edit them automatically?  
