@@ -23,11 +23,11 @@ Fancy interactive spinners, but output dynamically changes:
 
 **After:**
 
-- size of `node_modules/` after installing: `991.6 kB` with 5 packages (36.5 % smaller, 82.7 % less transitive dependencies)
+- size of `node_modules/` after installing: `972.6 kB` with 5 packages (37.7 % smaller, 82.7 % less transitive dependencies)
 - running `node bin/lint-staged.js` in its own repo with 1 staged file: `302 ms` (n=10) (12.5 % faster)
 - running `node bin/lint-staged.js` in its own repo with 28 staged files: `686 ms` (n=10) (3.9 % faster)
-- package size: `46.9 kB` (0.2 % larger)
-- unpacked size: `159.1 kB` (1.1 % larger)
+- package size: `47.2 kB` (0.9 % larger)
+- unpacked size: `160.6 kB` (2.1 % larger)
 
 Simpler but more explicit output:
 
