@@ -1,8 +1,8 @@
-import { describe, it, vi } from 'vitest'
+import { describe, it, test, vi } from 'vitest'
 
 import * as colors from '../../lib/colors.js'
 import * as figures from '../../lib/figures.js'
-import { runParallelTasks } from '../../lib/runParallelTasks.js'
+import { parseConcurrency, runParallelTasks } from '../../lib/runParallelTasks.js'
 
 const createTaskGroup = (title, task, skip = vi.fn(() => false)) => ({ title, task, skip })
 
@@ -167,5 +167,14 @@ describe('runParallelTasks', () => {
     })
 
     expect(logger.log.mock.calls.flat()).toEqual(['', ''])
+  })
+
+  test('parseConcurrency', ({ expect }) => {
+    expect(parseConcurrency(0)).toBe(1)
+    expect(parseConcurrency(false)).toBe(1)
+    expect(parseConcurrency(true)).toBe(Infinity)
+    expect(parseConcurrency(42)).toBe(42)
+    expect(parseConcurrency(0.4)).toBe(1)
+    expect(parseConcurrency(1.2)).toBe(1)
   })
 })

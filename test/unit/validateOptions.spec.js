@@ -27,6 +27,21 @@ describe('validateOptions', () => {
     expect(logger.history()).toHaveLength(0)
   })
 
+  describe('concurrent', () => {
+    it.for([false, true, 1, 42])(
+      'Should accept valid value: $0',
+      async (concurrent, { expect }) => {
+        const logger = makeConsoleMock()
+        await expect(validateOptions({ concurrent }, logger)).resolves.toBeUndefined()
+      }
+    )
+
+    it.for(['foo', 0.5])('Should reject invalid value: $0', async (concurrent, { expect }) => {
+      const logger = makeConsoleMock()
+      await expect(validateOptions({ concurrent }, logger)).rejects.toThrow(InvalidOptionsError)
+    })
+  })
+
   describe('cwd', () => {
     it('should resolve with valid absolute cwd option', async ({ expect }) => {
       expect.assertions(4)
