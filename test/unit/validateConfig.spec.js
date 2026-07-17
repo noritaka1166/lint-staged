@@ -88,7 +88,7 @@ describe('validateConfig', () => {
   })
 
   it('should wrap function config into object', ({ expect }) => {
-    const functionConfig = (stagedFiles) => [`eslint --fix ${stagedFiles}', 'git add`]
+    const functionConfig = (stagedFiles) => [`oxfmt --fix ${stagedFiles}', 'git add`]
 
     expect(validateConfig(functionConfig, configPath, logger)).toEqual({
       '*': functionConfig,
@@ -98,7 +98,7 @@ describe('validateConfig', () => {
 
   it('should not throw and should print nothing for valid config', ({ expect }) => {
     const validSimpleConfig = {
-      '*.js': ['eslint --fix', 'git add'],
+      '*.js': ['oxfmt --fix', 'git add'],
     }
 
     expect(() => validateConfig(validSimpleConfig, configPath, logger)).not.toThrow()

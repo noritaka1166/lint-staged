@@ -1,3 +1,3 @@
-export const prettierListDifferent = { '*.js': 'prettier --list-different' }
+export const oxfmtListDifferent = { '*.js': 'oxfmt --list-different' }
 
-export const prettierWrite = { '*.js': 'prettier --write' }
+export const oxfmtWrite = { '*.js': 'oxfmt --write' }

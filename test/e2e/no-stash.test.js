@@ -10,7 +10,7 @@ describe('lint-staged', () => {
     '--diff implies --no-stash',
     withGitIntegration(async ({ execGit, expect, writeFile, cwd }) => {
       await execGit(['checkout', '-b', 'my-branch'])
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
       await writeFile('test.js', fileFixtures.prettyJS)
       await execGit(['add', '.lintstagedrc.json'])
       await execGit(['add', 'test.js'])
@@ -41,9 +41,9 @@ describe('lint-staged', () => {
   )
 
   test(
-    "--no-stash doesn't imply --no-hide-partially-staged, losing conflicting unstaged changes",
+    "--no-stash doesn't imply --no-hide-partially-staged",
     withGitIntegration(async ({ execGit, expect, readFile, writeFile, cwd }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
 
       // Stage ugly file
       await writeFile('test.js', fileFixtures.uglyJS)
@@ -58,7 +58,7 @@ describe('lint-staged', () => {
       )
 
       // unstaged changes were discarded
-      expect(await readFile('test.js')).toEqual(fileFixtures.uglyJS)
+      expect(await readFile('test.js')).toEqual(fileFixtures.uglyJSWithChanges)
 
       expect(await execGit(['status'])).toMatch('new file:   test.js')
     })

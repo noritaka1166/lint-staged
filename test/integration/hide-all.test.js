@@ -8,7 +8,7 @@ describe('lint-staged', () => {
   test(
     'should hide all unstaged changes and untracked files with --hide-all option',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
       await execGit(['add', '.lintstagedrc.json'])
 
       // Stage pretty files
@@ -54,7 +54,7 @@ describe('lint-staged', () => {
   test(
     'should work with --hide-all option even without untracked files',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
       await execGit(['add', '.lintstagedrc.json'])
 
       // Stage pretty files

@@ -1,6 +1,7 @@
 import makeConsoleMock from 'consolemock'
 import { describe, test } from 'vitest'
 
+import * as figures from '../../lib/figures.js'
 import lintStaged from '../../lib/index.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
@@ -23,7 +24,7 @@ describe('lint-staged', () => {
       // Nothing is staged at this point, so don't rung `gitCommit`
       const passed = await lintStaged(
         {
-          config: { '*.js': 'prettier --list-different' },
+          config: { '*.js': 'oxfmt --list-different' },
           cwd,
           diff: `${hashes[1]}...${hashes[0]}`,
           stash: false,
@@ -34,7 +35,7 @@ describe('lint-staged', () => {
       // Lint-staged failed because commit diff contains ugly file
       expect(passed).toEqual(false)
 
-      expect(console.printHistory()).toMatch('prettier --list-different [FAILED]')
+      expect(console.printHistory()).toMatch(`${figures.error} oxfmt --list-different`)
     })
   )
 
@@ -50,7 +51,7 @@ describe('lint-staged', () => {
       // Run lint-staged with `--diff-filter=D` to include only deleted files.
       const passed = await lintStaged(
         {
-          config: { '*.js': 'prettier --list-different' },
+          config: { '*.js': 'oxfmt --list-different' },
           cwd,
           diffFilter: 'D',
           stash: false,
@@ -81,7 +82,7 @@ describe('lint-staged', () => {
       // Run lint-staged with `--diff-filter=D` to include only deleted files.
       const passed = await lintStaged(
         {
-          config: { '*.js': 'prettier --list-different --no-error-on-unmatched-pattern' },
+          config: { '*.js': 'oxfmt --list-different --no-error-on-unmatched-pattern' },
           cwd,
           diffFilter: 'D',
         },
@@ -110,7 +111,7 @@ describe('lint-staged', () => {
       // Use git to restore deleted staged file and then prettify it
       const passed = await lintStaged(
         {
-          config: { '*.js': ['git reset --', 'git checkout --', 'prettier --write'] },
+          config: { '*.js': ['git reset --', 'git checkout --', 'oxfmt --write'] },
           cwd,
           diffFilter: 'D',
         },
@@ -140,7 +141,7 @@ describe('lint-staged', () => {
       const passed = await lintStaged(
         {
           config: {
-            '*.js': 'prettier --list-different',
+            '*.js': 'oxfmt --list-different',
             '*': () => [/* despite empty array, this triggers processing of all files */],
           },
           cwd,
@@ -150,7 +151,7 @@ describe('lint-staged', () => {
       )
 
       expect(passed).toEqual(true)
-      expect(console.printHistory()).toMatch('Running tasks for staged files...')
+      expect(console.printHistory()).toMatch('Running tasks for staged files…')
       expect(console.printHistory()).not.toMatch('fatal: pathspec')
       expect(console.printHistory()).not.toMatch('did not match any files')
     })

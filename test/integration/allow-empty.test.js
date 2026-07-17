@@ -8,7 +8,7 @@ describe('lint-staged', () => {
   test(
     "fails when task reverts staged changes without `--allow-empty`, to prevent an empty git commit, but doesn't reset state",
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, removeFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       // Create and commit a pretty file without running lint-staged
       // This way the file will be available for the next step
@@ -23,8 +23,8 @@ describe('lint-staged', () => {
 
       expect(await execGit(['status', '-z'])).toMatch('M  test.js')
 
-      // Run lint-staged with prettier --write to automatically fix the file
-      // Since prettier reverts all changes, the commit should fail
+      // Run lint-staged with oxfmt --write to automatically fix the file
+      // Since oxfmt reverts all changes, the commit should fail
       await expect(gitCommit()).rejects.toThrow('lint-staged prevented an empty git commit.')
 
       // Something was wrong so commit was canceled
@@ -42,7 +42,7 @@ describe('lint-staged', () => {
   test(
     'creates commit when task reverts staged changed and --allow-empty is used',
     withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       // Create and commit a pretty file without running lint-staged
       // This way the file will be available for the next step
@@ -54,9 +54,12 @@ describe('lint-staged', () => {
       await writeFile('test.js', fileFixtures.uglyJS)
       await execGit(['add', 'test.js'])
 
-      // Run lint-staged with prettier --write to automatically fix the file
+      // Run lint-staged with oxfmt --write to automatically fix the file
       // Here we also pass '--allow-empty' to gitCommit because this part is not the full lint-staged
-      await gitCommit({ lintStaged: { allowEmpty: true }, gitCommit: ['-m test', '--allow-empty'] })
+      await gitCommit({
+        lintStaged: { allowEmpty: true },
+        gitCommit: ['-m test', '--allow-empty'],
+      })
 
       // Nothing was wrong so the empty commit is created
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('3')

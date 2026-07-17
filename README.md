@@ -13,26 +13,20 @@ npm install --save-dev lint-staged # requires further setup
 ```
 $ git commit
 
-✔ Backed up original state in git stash (5bda95f)
-❯ Running tasks for staged files...
-  ❯ packages/frontend/.lintstagedrc.json — 1 file
-    ↓ *.js — no files [SKIPPED]
-    ❯ *.{json,md} — 1 file
-      ⠹ prettier --write
-  ↓ packages/backend/.lintstagedrc.json — 2 files
-    ❯ *.js — 2 files
-      ⠼ eslint --fix
-    ↓ *.{json,md} — no files [SKIPPED]
-◼ Updating Git index again...
-◼ Cleaning up temporary files...
+⋯ Backing up original state…
+✔ Done backing up original state (1f4c047d)!
+⋯ Running tasks for staged files…
+    *.{json,md} — 1 file
+      ⋯ prettier --write
+
+✔ prettier --write
+
+✔ Done running tasks for staged files!
+⋯ Staging changes from tasks…
+✔ Done staging changes from tasks!
+⋯ Cleaning up temporary files…
+✔ Done cleaning up temporary files!
 ```
-
-<details>
-<summary>See asciinema video</summary>
-
-[![asciicast](https://asciinema.org/a/199934.svg)](https://asciinema.org/a/199934)
-
-</details>
 
 > [!Tip]
 > Do you only want to check staged files for errors, but not edit them automatically?  
@@ -154,11 +148,7 @@ Change the working directory _lint-staged_ runs tasks in. Defaults to `process.c
 
 #### `--debug`
 
-Run in debug mode. When set, it does the following:
-
-- log additional information about staged files, commands being executed, location of binaries, etc.
-- uses [`verbose` renderer](https://listr2.kilic.dev/renderers/verbose-renderer/) for `listr2`; this causes serial, uncoloured output to the terminal, instead of the default (beautified, dynamic) output.
-  (the [`verbose` renderer](https://listr2.kilic.dev/renderers/verbose-renderer/) can also be activated by setting the `TERM=dumb` or `NODE_ENV=test` environment variables)
+Log additional information about staged files, commands being executed, location of binaries, etc.
 
 #### `--diff`
 

@@ -6,7 +6,7 @@ import { mockTinyexecReturnValue } from './mockTinyexecReturnValue.js'
  * @returns {Promise<{ exec: import('vitest').Mocked<import('tinyexec').TinyExec> }>}
  */
 export const getMockTinyexec = async () => {
-  vi.mock('tinyexec', async (importOriginal) => {
+  vi.doMock('tinyexec', async (importOriginal) => {
     const mod = await importOriginal()
     return {
       ...mod,

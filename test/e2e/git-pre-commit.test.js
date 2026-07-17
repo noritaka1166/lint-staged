@@ -8,7 +8,7 @@ describe('lint-staged', () => {
   test(
     'works with git add + git commit',
     withGitIntegration(async ({ execGit, expect, setupPreCommitHook, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
       await setupPreCommitHook()
 
       await writeFile('test.js', fileFixtures.uglyJS)
@@ -28,7 +28,7 @@ describe('lint-staged', () => {
   test(
     'works with git commit --all',
     withGitIntegration(async ({ execGit, expect, setupPreCommitHook, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
       await setupPreCommitHook()
 
       await writeFile('test.js', fileFixtures.uglyJS)
@@ -47,7 +47,7 @@ describe('lint-staged', () => {
   test(
     'works with git commit <pathspec>',
     withGitIntegration(async ({ execGit, expect, setupPreCommitHook, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
       await setupPreCommitHook()
 
       await writeFile('test.js', fileFixtures.uglyJS)

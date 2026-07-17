@@ -1,3 +1,4 @@
+import makeConsoleMock from 'consolemock'
 import { describe, it, vi } from 'vitest'
 
 import { getInitialState } from '../../lib/state.js'
@@ -14,7 +15,7 @@ const { execGit } = await import('../../lib/execGit.js')
 const { GitWorkflow, STASH } = await import('../../lib/gitWorkflow.js')
 
 describe('gitWorkflow', () => {
-  const options = { gitConfigDir: '.' }
+  const options = { logger: makeConsoleMock(), gitConfigDir: '.' }
 
   describe('getBackupStash', () => {
     it('should throw when stash not found', async ({ expect }) => {

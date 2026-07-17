@@ -10,7 +10,7 @@ import { readStdin } from '../lib/readStdin.js'
 
 const debugLog = createDebug('lint-staged:bin')
 
-// Do not terminate main Listr process on SIGINT
+// SIGINT handled by an AbortController
 process.on('SIGINT', () => {})
 
 const cliOptions = parseCliOptions(process.argv)

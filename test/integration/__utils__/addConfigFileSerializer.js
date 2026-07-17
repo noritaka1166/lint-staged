@@ -12,8 +12,8 @@ const replaceConfigPathSerializer = replaceSerializer(
 
 // Hide filepath from test snapshot because it's not important and varies in CI
 const replaceFilepathSerializer = replaceSerializer(
-  /prettier --write (.*)?$/gm,
-  `prettier --write <path>`
+  /oxfmt --write (.*)?$/gm,
+  `oxfmt --write <path>`
 )
 
 export const addConfigFileSerializer = () => {

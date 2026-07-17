@@ -9,7 +9,16 @@ vi.mock('../../lib/debug.js', () => ({
 
 vi.mock('../../lib/getStagedFiles.js', () => ({ getStagedFiles: vi.fn() }))
 
-vi.mock('../../lib/gitWorkflow.js', () => ({ GitWorkflow: vi.fn() }))
+vi.mock('../../lib/gitWorkflow.js', () => ({
+  GitWorkflow: vi.fn(
+    class {
+      prepare = vi.fn()
+      updateIndex = vi.fn()
+      cleanup = vi.fn()
+      runTasks = vi.fn()
+    }
+  ),
+}))
 
 vi.mock('../../lib/validateOptions.js', () => ({
   validateOptions: vi.fn().mockImplementation(async () => void {}),

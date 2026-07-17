@@ -29,7 +29,7 @@ describe('lint-staged', () => {
 
         const diff = await execGit(['diff'])
 
-        // Run lint-staged with `prettier --write` and commit pretty file
+        // Run lint-staged with `oxfmt --write` and commit pretty file
         // The task creates a git lock file and runs `git add` to simulate failure
         await expect(
           gitCommit({
@@ -37,13 +37,13 @@ describe('lint-staged', () => {
               config: {
                 '*.js': (files) => [
                   `node ${path.join(cwd, 'add-git-lock.mjs')}`,
-                  `prettier --write ${files.join(' ')}`,
+                  `oxfmt --write ${files.join(' ')}`,
                   `git add ${files.join(' ')}`,
                 ],
               },
             },
           })
-        ).rejects.toThrow(".git/index.lock': File exists")
+        ).rejects.toThrow('lint-staged failed due to a git error')
 
         // Something was wrong so new commit wasn't created
         expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('1')

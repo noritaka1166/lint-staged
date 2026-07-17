@@ -1,27 +1,27 @@
-import { test, expectTypeOf, expect } from 'vitest'
+import { test, expectTypeOf } from 'vitest'
 
 import lintStaged, { type Configuration, type Options, Logger } from '../../lib/index.js'
 
 test('lint-staged TypeScript types', () => {
   expectTypeOf({
-    '*.ext1': 'eslint',
+    '*.ext1': 'oxlint',
 
-    '*.ext2': ['eslint', 'prettier'],
+    '*.ext2': ['oxlint', 'oxfmt'],
 
     '*.ext3': (fileNames: readonly string[]) => {
-      return `eslint ${fileNames.join(' ')}`
+      return `oxlint ${fileNames.join(' ')}`
     },
 
     '*.ext4': (fileNames: readonly string[]) => {
-      return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
+      return [`oxlint ${fileNames.join(' ')}`, `oxfmt --write ${fileNames.join(' ')}`]
     },
 
     '*.ext5': async (fileNames: readonly string[]) => {
-      return `eslint ${fileNames.join(' ')}`
+      return `oxlint ${fileNames.join(' ')}`
     },
 
     '*.ext6': async (fileNames: readonly string[]) => {
-      return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
+      return [`oxlint ${fileNames.join(' ')}`, `oxfmt --write ${fileNames.join(' ')}`]
     },
 
     '*.ext7': {
@@ -40,19 +40,19 @@ test('lint-staged TypeScript types', () => {
   }).toExtend<Configuration>()
 
   expectTypeOf((fileNames: readonly string[]) => {
-    return `eslint ${fileNames.join(' ')}`
+    return `oxlint ${fileNames.join(' ')}`
   }).toExtend<Configuration>()
 
   expectTypeOf((fileNames: readonly string[]) => {
-    return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
+    return [`oxlint ${fileNames.join(' ')}`, `oxfmt --write ${fileNames.join(' ')}`]
   }).toExtend<Configuration>()
 
   expectTypeOf(async (fileNames: readonly string[]) => {
-    return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
+    return [`oxlint ${fileNames.join(' ')}`, `oxfmt --write ${fileNames.join(' ')}`]
   }).toExtend<Configuration>()
 
   expectTypeOf(async (fileNames: readonly string[]) => {
-    return [`eslint ${fileNames.join(' ')}`, `prettier --write ${fileNames.join(' ')}`]
+    return [`oxlint ${fileNames.join(' ')}`, `oxfmt --write ${fileNames.join(' ')}`]
   }).toExtend<Configuration>()
 
   expectTypeOf(lintStaged).toBeFunction()

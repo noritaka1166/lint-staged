@@ -1,5 +1,3 @@
-/* eslint-disable n/no-unsupported-features/node-builtins */
-
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import util from 'node:util'

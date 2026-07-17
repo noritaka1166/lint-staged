@@ -107,7 +107,6 @@ describe('lintStaged', () => {
     const logger = makeConsoleMock()
 
     await lintStaged({}, logger).catch((error) => {
-      // eslint-disable-next-line vitest/no-conditional-expect
       expect(error).toEqual(testError)
     })
 

@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": ["coverage", "test/unit/__mocks__", "package-lock.json"],
+  "printWidth": 100,
+  "semi": false,
+  "singleQuote": true,
+  "sortImports": true,
+  "sortPackageJson": false,
+  "trailingComma": "es5"
+}

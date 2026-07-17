@@ -11,7 +11,7 @@ describe('lint-staged', () => {
   test(
     'commits partial change from partially staged file when no errors from linter',
     withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile }) => {
-      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
 
       // Stage pretty file
       await appendFile('test.js', fileFixtures.prettyJS)
@@ -23,9 +23,9 @@ describe('lint-staged', () => {
 
       const output = await gitCommit()
 
-      expect(output).toMatch('Hiding unstaged changes to partially staged files...')
-      expect(output).toMatch('Staging changes from tasks...')
-      expect(output).toMatch('Restoring unstaged changes...')
+      expect(output).toMatch('Hiding unstaged changes to partially staged files')
+      expect(output).toMatch('Staging changes from tasks…')
+      expect(output).toMatch('Restoring unstaged changes…')
 
       // Nothing is wrong, so a new commit is created and file is pretty
       expect(await execGit(['rev-list', '--count', 'HEAD'])).toEqual('2')
@@ -47,7 +47,7 @@ describe('lint-staged', () => {
   test(
     'commits partial change from partially staged file when no errors from linter and linter modifies file',
     withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile }) => {
-      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       // Stage ugly file
       await appendFile('test.js', fileFixtures.uglyJS)
@@ -80,7 +80,7 @@ describe('lint-staged', () => {
   test(
     'fails to commit partial change from partially staged file when errors from linter',
     withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile }) => {
-      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
 
       // Stage ugly file
       await appendFile('test.js', fileFixtures.uglyJS)
@@ -91,8 +91,8 @@ describe('lint-staged', () => {
       await appendFile('test.js', appended)
       const status = await execGit(['status'])
 
-      // Run lint-staged with `prettier --list-different` to break the linter
-      await expect(gitCommit(configFixtures.prettierListDifferent)).rejects.toThrow(
+      // Run lint-staged with `oxfmt --list-different` to break the linter
+      await expect(gitCommit(configFixtures.oxfmtListDifferent)).rejects.toThrow(
         'Reverting to original state because of errors'
       )
 
@@ -107,9 +107,9 @@ describe('lint-staged', () => {
   test(
     'fails to commit partial change from partially staged file when errors from linter and linter modifies files',
     withGitIntegration(async ({ appendFile, execGit, expect, gitCommit, readFile }) => {
-      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
-      // Add unfixable file to commit so `prettier --write` breaks
+      // Add unfixable file to commit so `oxfmt --write` breaks
       await appendFile('test.js', fileFixtures.invalidJS)
       await execGit(['add', 'test.js'])
 

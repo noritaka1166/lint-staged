@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { describe, test } from 'vitest'
 
-import { prettierWrite } from './__fixtures__/configs.js'
+import { oxfmtWrite } from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
@@ -13,7 +13,7 @@ describe('lint-staged', () => {
     withGitIntegration(async ({ appendFile, cwd, execGit, expect, gitCommit, readFile }) => {
       await appendFile('test.js', fileFixtures.uglyJS)
 
-      await appendFile('.config/.lintstagedrc.json', JSON.stringify(prettierWrite))
+      await appendFile('.config/.lintstagedrc.json', JSON.stringify(oxfmtWrite))
       await fs.symlink(
         path.join(cwd, '.config/.lintstagedrc.json'),
         path.join(cwd, '.lintstagedrc.json')

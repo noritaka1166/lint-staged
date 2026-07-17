@@ -1,6 +1,5 @@
 /** @type {import('./lib/index.js').Configuration} */
 export default {
-  '*.js': 'eslint --fix',
-  '*.{json,md}': 'prettier --write',
+  '*': ['oxfmt --write --no-error-on-unmatched-pattern', 'oxlint --no-error-on-unmatched-pattern'],
   '*.ts': () => 'tsc',
 }

@@ -8,7 +8,7 @@ describe('lint-staged', () => {
   test(
     'should hide unstaged changes with --hide-unstaged flag',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
 
       // Stage pretty files
       await writeFile('pretty.js', fileFixtures.prettyJS)

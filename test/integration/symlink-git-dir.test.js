@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { describe, test } from 'vitest'
 
-import { prettierListDifferent } from './__fixtures__/configs.js'
+import { oxfmtListDifferent } from './__fixtures__/configs.js'
 import { prettyJS } from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
@@ -15,13 +15,13 @@ describe('lint-staged', () => {
       await fs.rename(path.resolve(cwd, '.git'), path.resolve(cwd, 'git'))
       await fs.symlink(path.resolve(cwd, 'git'), path.resolve(cwd, '.git'), 'dir')
 
-      await writeFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(oxfmtListDifferent))
 
       // Stage pretty file
       await writeFile('test file.js', prettyJS)
       await execGit(['add', 'test file.js'])
 
-      // Run lint-staged with `prettier --list-different` and commit pretty file
+      // Run lint-staged with `oxfmt --list-different` and commit pretty file
       await gitCommit()
 
       // Nothing is wrong, so a new commit is created

@@ -12,12 +12,12 @@ describe('lint-staged', () => {
     'ignores symlinked staged files',
     withGitIntegration(async ({ appendFile, cwd, execGit, expect, gitCommit, readFile }) => {
       await appendFile('test.js', fileFixtures.uglyJS)
-      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
 
       await execGit(['add', '.'])
 
       /** lint-staged fails to ugly staged file */
-      await expect(gitCommit()).rejects.toThrow('prettier --list-different')
+      await expect(gitCommit()).rejects.toThrow('oxfmt --list-different')
 
       await execGit(['commit', '-m "commit without lint-staged"'])
 

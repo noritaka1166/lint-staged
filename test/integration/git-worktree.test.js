@@ -2,7 +2,7 @@ import path from 'node:path'
 
 import { describe, test } from 'vitest'
 
-import { prettierListDifferent } from './__fixtures__/configs.js'
+import { oxfmtListDifferent } from './__fixtures__/configs.js'
 import * as fileFixtures from './__fixtures__/files.js'
 import { withGitIntegration } from './__utils__/withGitIntegration.js'
 
@@ -10,7 +10,7 @@ describe('lint-staged', () => {
   test(
     'handles git worktrees',
     withGitIntegration(async ({ appendFile, cwd, execGit, expect, gitCommit, readFile }) => {
-      await appendFile('.lintstagedrc.json', JSON.stringify(prettierListDifferent))
+      await appendFile('.lintstagedrc.json', JSON.stringify(oxfmtListDifferent))
 
       // create a new branch and add it as worktree
       const workTreeDir = path.resolve(cwd, 'worktree')
@@ -21,7 +21,7 @@ describe('lint-staged', () => {
       await appendFile('test.js', fileFixtures.prettyJS, workTreeDir)
       await execGit(['add', 'test.js'], { cwd: workTreeDir })
 
-      // Run lint-staged with `prettier --list-different` and commit pretty file
+      // Run lint-staged with `oxfmt --list-different` and commit pretty file
       await gitCommit(undefined, workTreeDir)
 
       // Nothing is wrong, so a new commit is created

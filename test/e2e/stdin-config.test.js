@@ -21,7 +21,7 @@ describe('lint-staged', () => {
         stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
       })
 
-      child.stdin.write(JSON.stringify(configFixtures.prettierWrite))
+      child.stdin.write(JSON.stringify(configFixtures.oxfmtWrite))
       child.stdin.end()
 
       await new Promise((resolve, reject) => {
@@ -42,7 +42,7 @@ describe('lint-staged', () => {
       await execGit(['add', 'test file.js'])
 
       // Break JSON by removing } from the end
-      const brokenJSONConfig = JSON.stringify(configFixtures.prettierWrite).replace('"}', '"')
+      const brokenJSONConfig = JSON.stringify(configFixtures.oxfmtWrite).replace('"}', '"')
 
       // Run lint-staged with config from stdin
       const child = fork(lintStagedBin, ['-c', '-'], {

@@ -14,13 +14,13 @@ describe('lint-staged', () => {
   test(
     'commits entire staged file when no errors from linter',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
 
       // Stage pretty file
       await writeFile('test file.js', fileFixtures.prettyJS)
       await execGit(['add', 'test file.js'])
 
-      // Run lint-staged with `prettier --list-different` and commit pretty file
+      // Run lint-staged with `oxfmt --list-different` and commit pretty file
       await gitCommit()
 
       // Nothing is wrong, so a new commit is created
@@ -33,7 +33,7 @@ describe('lint-staged', () => {
   test(
     'commits entire staged file when no errors and linter modifies file',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       // Stage multiple ugly files
       await writeFile('test.js', fileFixtures.uglyJS)
@@ -42,7 +42,7 @@ describe('lint-staged', () => {
       await writeFile('test2.js', fileFixtures.uglyJS)
       await execGit(['add', 'test2.js'])
 
-      // Run lint-staged with `prettier --write` and commit pretty file
+      // Run lint-staged with `oxfmt --write` and commit pretty file
       await gitCommit()
 
       // Nothing is wrong, so a new commit is created and file is pretty
@@ -56,14 +56,14 @@ describe('lint-staged', () => {
   test(
     'fails to commit entire staged file when errors from linter',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
 
       // Stage ugly file
       await writeFile('test.js', fileFixtures.uglyJS)
       await execGit(['add', 'test.js'])
       const status = await execGit(['status'])
 
-      // Run lint-staged with `prettier --list-different` to break the linter
+      // Run lint-staged with `oxfmt --list-different` to break the linter
       await expect(gitCommit()).rejects.toThrow('Reverting to original state because of errors')
 
       // Something was wrong so the repo is returned to original state
@@ -77,14 +77,14 @@ describe('lint-staged', () => {
   test(
     'fails to commit entire staged file when errors from linter and linter modifies files',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
-      // Add unfixable file to commit so `prettier --write` breaks
+      // Add unfixable file to commit so `oxfmt --write` breaks
       await writeFile('test.js', fileFixtures.invalidJS)
       await execGit(['add', 'test.js'])
       const status = await execGit(['status'])
 
-      // Run lint-staged with `prettier --write` to break the linter
+      // Run lint-staged with `oxfmt --write` to break the linter
       await expect(gitCommit()).rejects.toThrow('Reverting to original state because of errors')
 
       // Something was wrong so the repo is returned to original state
@@ -98,7 +98,7 @@ describe('lint-staged', () => {
   test(
     'clears unstaged changes when linter applies same changes',
     withGitIntegration(async ({ appendFile, cwd, execGit, expect, gitCommit, readFile }) => {
-      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await appendFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       // Stage ugly file
       await appendFile('test.js', fileFixtures.uglyJS)
@@ -108,7 +108,7 @@ describe('lint-staged', () => {
       await fs.rm(path.join(cwd, 'test.js'))
       await appendFile('test.js', fileFixtures.prettyJS)
 
-      // Run lint-staged with `prettier --write` and commit pretty file
+      // Run lint-staged with `oxfmt --write` and commit pretty file
       await gitCommit()
 
       // Nothing is wrong, so a new commit is created and file is pretty
@@ -130,7 +130,7 @@ describe('lint-staged', () => {
   test(
     'runs chunked tasks when necessary',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
 
       // Stage two files
       await writeFile('test.js', fileFixtures.prettyJS)
@@ -138,7 +138,7 @@ describe('lint-staged', () => {
       await writeFile('test2.js', fileFixtures.prettyJS)
       await execGit(['add', 'test2.js'])
 
-      // Run lint-staged with `prettier --list-different` and commit pretty file
+      // Run lint-staged with `oxfmt --list-different` and commit pretty file
       // Set maxArgLength low enough so that chunking is used
       await gitCommit({ lintStaged: { maxArgLength: 10 } })
 
@@ -170,7 +170,7 @@ describe('lint-staged', () => {
   test(
     'handles files that begin with dash',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierWrite))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtWrite))
 
       await writeFile('--looks-like-flag.js', fileFixtures.uglyJS)
       await execGit(['add', '--', '--looks-like-flag.js'])
@@ -185,7 +185,7 @@ describe('lint-staged', () => {
   test(
     'works when a branch named stash exists',
     withGitIntegration(async ({ execGit, expect, gitCommit, readFile, writeFile }) => {
-      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.prettierListDifferent))
+      await writeFile('.lintstagedrc.json', JSON.stringify(configFixtures.oxfmtListDifferent))
 
       // create a new branch called stash
       await execGit(['branch', 'stash'])
@@ -193,7 +193,7 @@ describe('lint-staged', () => {
       await writeFile('test.js', fileFixtures.prettyJS)
       await execGit(['add', 'test.js'])
 
-      // Run lint-staged with `prettier --write` and commit pretty file
+      // Run lint-staged with `oxfmt --write` and commit pretty file
       await gitCommit()
 
       // Nothing is wrong, so a new commit is created and file is pretty
