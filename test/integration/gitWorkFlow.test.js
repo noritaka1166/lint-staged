@@ -286,6 +286,25 @@ describe('gitWorkflow', () => {
         expect(logger.printHistory()).toMatch('Failed to run tasks for changed files')
       })
     )
+
+    it(
+      'should handle done for changed files',
+      withGitIntegration(async ({ cwd, expect }) => {
+        const logger = makeConsoleMock()
+        const gitWorkflow = new GitWorkflow({
+          diff: 'HEAD..main',
+          logger,
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+
+        await gitWorkflow.runTasks(getInitialState(), [], {
+          abortController: new AbortController(),
+        })
+
+        expect(logger.printHistory()).toMatch('Done running tasks for changed files')
+      })
+    )
   })
 
   describe('updateIndex', () => {
