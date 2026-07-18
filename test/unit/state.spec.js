@@ -130,4 +130,16 @@ describe('shouldSkipCleanup', () => {
 
     expect(typeof result === 'string').toEqual(true)
   })
+
+  it('should return error message when when restorating unstaged changes failed', ({ expect }) => {
+    const state = getInitialState()
+    const result = cleanupSkipped({
+      ...state,
+      shouldBackup: true,
+      shouldRevert: false,
+      errors: new Set([GitError, RestoreUnstagedChangesError]),
+    })
+
+    expect(typeof result === 'string').toEqual(true)
+  })
 })
