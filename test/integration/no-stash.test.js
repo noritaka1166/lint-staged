@@ -88,7 +88,7 @@ describe('lint-staged', () => {
 
       // Run lint-staged with --no-stash
       await expect(gitCommit({ lintStaged: { stash: false } })).rejects.toThrow(
-        `${figures.error} oxfmt --write`
+        `${figures.error()} oxfmt --write`
       )
 
       // Something was wrong, so the commit was aborted

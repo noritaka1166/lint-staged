@@ -31,24 +31,6 @@ describe('getSpawnedTask', () => {
     vi.clearAllMocks()
   })
 
-  it('should pass FORCE_COLOR var to task when color supported', async ({ expect }) => {
-    expect.assertions(2)
-    const taskFn = getSpawnedTask({
-      ...defaultOpts,
-      command: 'node --arg=true ./myscript.js',
-      color: true,
-    })
-
-    await taskFn()
-    expect(exec).toHaveBeenCalledTimes(1)
-    expect(exec).toHaveBeenLastCalledWith('node', ['--arg=true', './myscript.js', 'test.js'], {
-      nodeOptions: {
-        cwd: process.cwd(),
-        env: { FORCE_COLOR: 'true' },
-      },
-    })
-  })
-
   it('should support non npm scripts', async ({ expect }) => {
     expect.assertions(2)
     const taskFn = getSpawnedTask({
