@@ -1,9 +1,5 @@
 # 🚫💩 lint-staged
 
-[![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged)
-
----
-
 Run tasks like formatters and linters against staged git files and don't let :poop: slip into your code base!
 
 ```bash
