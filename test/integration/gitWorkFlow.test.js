@@ -246,12 +246,10 @@ describe('gitWorkflow', () => {
           },
         ]
 
-        await expect(
-          gitWorkflow.runTasks(getInitialState(), tasks, {
-            abortController: new AbortController(),
-            concurrent: true,
-          })
-        ).rejects.toBe(error)
+        await gitWorkflow.runTasks(getInitialState(), tasks, {
+          abortController: new AbortController(),
+          concurrent: true,
+        })
 
         expect(logger.printHistory()).toMatch('Failed to run tasks for staged files')
       })
@@ -276,14 +274,36 @@ describe('gitWorkflow', () => {
           },
         ]
 
-        await expect(
-          gitWorkflow.runTasks(getInitialState(), tasks, {
-            abortController: new AbortController(),
-            concurrent: true,
-          })
-        ).rejects.toBe(error)
+        await gitWorkflow.runTasks(getInitialState(), tasks, {
+          abortController: new AbortController(),
+          concurrent: true,
+        })
 
         expect(logger.printHistory()).toMatch('Failed to run tasks for changed files')
+      })
+    )
+
+    it(
+      'should handle errors when calculating hash of unstaged changes',
+      withGitIntegration(async ({ cwd, expect }) => {
+        const logger = makeConsoleMock()
+        const gitWorkflow = new GitWorkflow({
+          logger,
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+        })
+        gitWorkflow.execGit = vi.fn().mockRejectedValue(new Error('test'))
+        const ctx = getInitialState({ failOnChanges: true })
+
+        await gitWorkflow.runTasks(ctx, [], {
+          abortController: new AbortController(),
+          concurrent: true,
+        })
+
+        expect(ctx.errors.has(GitError)).toBe(true)
+        expect(logger.printHistory()).toMatch(
+          'Failed to calculate SHA-256 hash of unstaged changes'
+        )
       })
     )
 
