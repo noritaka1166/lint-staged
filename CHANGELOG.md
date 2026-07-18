@@ -1,5 +1,57 @@
 # lint-staged
 
+## 17.1.0
+
+### Minor Changes
+
+- [#1816](https://github.com/lint-staged/lint-staged/pull/1816) [`7568d4f`](https://github.com/lint-staged/lint-staged/commit/7568d4fb15ba3c3317a7aec36195461cb2f272d7) - The console output of _lint-staged_ has been simplified so that there's less interactive spinners and more explicit messages like _"Started…_" -> "_Done!_". The primary purpose of this was to remove [`Listr2`](https://github.com/listr2/listr2), a very large dependency.
+
+  **Before:**
+
+  Size of `node_modules/` after installing: `1561.7 kB` with 29 packages.
+
+  Fancy interactive spinners, but output dynamically changes:
+
+  ```shell
+  ✔ Backed up original state in git stash (0b191303)
+  ✔ Running tasks for staged files...
+  ✔ Staging changes from tasks...
+  ✔ Cleaning up temporary files...
+  ```
+
+  **After:**
+
+  Size of `node_modules/` after installing: `974.0 kB` with 5 packages (37.6 % smaller, 82.7 % less transitive dependencies).
+
+  Simpler but more explicit output:
+
+  ```shell
+  ⋯ Backing up original state…
+  ✔ Done backing up original state (35b38ed1)!
+  ⋯ Running tasks for staged files…
+      *.js — 1 file
+        ⋯ oxlint --fix
+      *.{json,md} — 1 file
+        ⋯ oxfmt --write
+
+  ✔ oxfmt --write
+  ✔ oxlint --fix
+
+  ✔ Done running tasks for staged files!
+  ⋯ Staging changes from tasks…
+  ✔ Done staging changes from tasks!
+  ⋯ Cleaning up temporary files…
+  ✔ Done cleaning up temporary files!
+  ```
+
+### Patch Changes
+
+- [#1816](https://github.com/lint-staged/lint-staged/pull/1816) [`c19079d`](https://github.com/lint-staged/lint-staged/commit/c19079d808d557b538c34fe69381d2ef970c7acc) - Try to restore hidden unstaged changes when using `--no-revert`.
+
+- [#1818](https://github.com/lint-staged/lint-staged/pull/1818) [`efb23a2`](https://github.com/lint-staged/lint-staged/commit/efb23a25075d980db9edabd2f71e769fc97d48c8) - Console output colors are enabled/disabled more consistently.
+
+- [#1818](https://github.com/lint-staged/lint-staged/pull/1818) [`26112a1`](https://github.com/lint-staged/lint-staged/commit/26112a19151f9678861d51ea7416e9f9bef24bbb) - Failed JS function tasks now properly kill other tasks, unless `--continue-on-error` is used. Previously their failure didn't affect other tasks.
+
 ## 17.0.8
 
 ### Patch Changes
@@ -37,6 +89,7 @@
 ### Patch Changes
 
 - [#1788](https://github.com/lint-staged/lint-staged/pull/1788) [`f95c1f8`](https://github.com/lint-staged/lint-staged/commit/f95c1f8df3368758c44c2052e568aac1b3d4c767) - Another fix for making sure _lint-staged_ adds task modifications correctly to the commit in the following cases:
+
   - after editing `<file>` it is staged with `git add <file>`, and then committed with `git commit`
   - after editing `<file>` it is committed with `git commit --all` without explicit `git add`
   - after editing `<file>` it is committed with `git commit <pathspec>` without explicit `git add`
@@ -84,6 +137,7 @@
 - [#1748](https://github.com/lint-staged/lint-staged/pull/1748) [`809d5ef`](https://github.com/lint-staged/lint-staged/commit/809d5ef0a66edb2b26b233d33ce8e14af6c978e7) Thanks [@iiroj](https://github.com/iiroj)! - Add new option `--hide-all` for hiding all unstaged changes and untracked files, before running tasks. This makes it easier to run tools like [Knip](https://knip.dev) which check for unused code. Untracked files are included in the backup stash and restored automatically after running.
 
 - [#1759](https://github.com/lint-staged/lint-staged/pull/1759) [`f13045a`](https://github.com/lint-staged/lint-staged/commit/f13045a5eae28c3233fc37146b0e1f51739c254b) Thanks [@iiroj](https://github.com/iiroj)! - Update dependencies, including [`tinyexec@1.1.1`](https://github.com/tinylibs/tinyexec/releases/tag/1.1.1) to fix the following issues:
+
   - When using a Node.js version manager with multiple versions installed ([nvm](https://github.com/nvm-sh/nvm), [n](https://github.com/tj/n), for example), scripts with the `#!/usr/bin/env node` shebang ([Prettier](https://github.com/prettier/prettier), [ESLint](https://github.com/eslint/eslint), for example) were previously spawned using the default Node.js version configured by the version manager (the one `which node` points to) on POSIX systems. Now, they will be spawned with the same version that _lint-staged_ itself was started with.
     - For example, if your default Node.js version is 24.14.1 but _lint-staged_ is run with the latest version 25.9.0, the tasks spawned by _lint-staged_ will now also use version 25.9.0. Previously they were spawned using 24.14.1.
   - When installing Node.js from the Ubuntu App Center ([Snap store](https://snapcraft.io/store)), the `node` executable available in `PATH` is a symlink pointing to Snap itself. The sandboxing features of Snap prevented _lint-staged_ from spawning scripts with the `#!/usr/bin/env node` shebang, because it meant _lint-staged_ tried to spawn Snap via the symlink. This resulted in an `ENOENT` error when trying to run `prettier`, for example. Now, since the real `node` executable's directory is available in the `PATH`, _lint-staged_ will instead spawn the script with the real `node` binary succesfully.
@@ -335,7 +389,7 @@
   If you were using the shell option to avoid passing filenames to tasks, for example `bash -c 'tsc --noEmit'`, use the function syntax instead:
 
   ```js
-  export default { '*.ts': () => 'tsc --noEmit' }
+  export default { "*.ts": () => "tsc --noEmit" };
   ```
 
 - [#1546](https://github.com/lint-staged/lint-staged/pull/1546) [`158d15c`](https://github.com/lint-staged/lint-staged/commit/158d15c9aea0a3a87790ec3766442763cf387dba) Thanks [@iiroj](https://github.com/iiroj)! - Validation for deprecated advanced configuration has been removed. The advanced configuration was removed in _lint-staged_ version 9 and until now validation has failed if advanced configuration options were detected. Going forward the entire configuration will be treated with the same logic and if these advanced options are still present, they might be treated as valid globs for staged files instead.
@@ -348,13 +402,13 @@
 
   ```js
   export default {
-    '*.js': {
-      title: 'My task',
+    "*.js": {
+      title: "My task",
       task: async (files) => {
-        console.log('Staged JS files:', files)
+        console.log("Staged JS files:", files);
       },
     },
-  }
+  };
   ```
 
   _Lint-staged_ will run your function task with the staged files matching the configured glob as its argument, and show the custom title in its console output.
@@ -386,6 +440,7 @@
   By default Prettier [prefers double quotes](https://prettier.io/docs/rationale#strings).
 
   #### Previously
+
   1. Stage `file.js` with only double quotes `"` changed to `'`
   1. Run `git commit -am "I don't like double quotes"`
   1. _Lint-staged_ runs `prettier --write file.js`, converting all the `'` back to `"`
@@ -393,6 +448,7 @@
   1. Commit was not done, original state is restored and single quotes `'` are staged
 
   #### Now
+
   1. Stage `file.js` with only double-quotes `"` changed to `'`
   1. Run `git commit -am "I don't like double quotes"`
   1. _Lint-staged_ runs `prettier --write file.js`, converting all the `'` back to `"`
@@ -431,8 +487,8 @@
    * @type {import('lint-staged').Configuration}
    */
   export default {
-    '*': 'prettier --write',
-  }
+    "*": "prettier --write",
+  };
   ```
 
   It's also possible to use the `.ts` file extension for the configuration if your Node.js version supports it. The `--experimental-strip-types` flag was introduced in [Node.js v22.6.0](https://github.com/nodejs/node/releases/tag/v22.6.0) and unflagged in [v23.6.0](https://github.com/nodejs/node/releases/tag/v23.6.0), enabling Node.js to execute TypeScript files without additional configuration.
@@ -924,7 +980,7 @@ To update your Node.js integration, please use:
 
 ```js
 // const lintStaged = require('lint-staged')
-import lintStaged from 'lint-staged'
+import lintStaged from "lint-staged";
 ```
 
 ## [v11.3.0-beta.2](https://github.com/lint-staged/lint-staged/releases/tag/v11.3.0-beta.2) - 30 Oct 2021
