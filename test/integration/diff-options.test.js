@@ -35,7 +35,7 @@ describe('lint-staged', () => {
       // Lint-staged failed because commit diff contains ugly file
       expect(passed).toEqual(false)
 
-      expect(console.printHistory()).toMatch(`${figures.error} oxfmt --list-different`)
+      expect(console.printHistory()).toMatch(`${figures.error()} oxfmt --list-different`)
     })
   )
 

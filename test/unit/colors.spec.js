@@ -1,11 +1,10 @@
-import { describe, suite, test, vi } from 'vitest'
+import { describe, suite, test } from 'vitest'
+
+import { enableColors, green, red, dim, blue, bold, yellow } from '../../lib/colors.js'
 
 suite('colors', () => {
   describe('color functions', async () => {
-    vi.stubEnv('FORCE_COLOR', '1')
-    process.stdout.hasColors = vi.fn().mockReturnValue(true)
-
-    const { green, red, dim, blue, bold, yellow } = await import('../../lib/colors.js')
+    enableColors(true)
 
     const colors = { green, red, dim, blue, bold, yellow }
 

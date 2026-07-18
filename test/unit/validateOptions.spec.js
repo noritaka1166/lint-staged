@@ -36,7 +36,7 @@ describe('validateOptions', () => {
       }
     )
 
-    it.for(['foo', 0.5])('Should reject invalid value: $0', async (concurrent, { expect }) => {
+    it.for(['foo', 0.5, NaN])('Should reject invalid value: $0', async (concurrent, { expect }) => {
       const logger = makeConsoleMock()
       await expect(validateOptions({ concurrent }, logger)).rejects.toThrow(InvalidOptionsError)
     })

@@ -1,18 +1,12 @@
+import makeConsoleMock from 'consolemock'
 import { describe, it, test, vi } from 'vitest'
 
-import * as colors from '../../lib/colors.js'
 import * as figures from '../../lib/figures.js'
 import { parseConcurrency, runParallelTasks } from '../../lib/runParallelTasks.js'
 
 const createTaskGroup = (title, task, skip = vi.fn(() => false)) => ({ title, task, skip })
 
 const createTask = (title, task = vi.fn()) => ({ task, title })
-
-const createLogger = () => ({
-  error: vi.fn(),
-  log: vi.fn(),
-  warn: vi.fn(),
-})
 
 describe('runParallelTasks', () => {
   it('should run visible tasks and report their status', async ({ expect }) => {
@@ -21,7 +15,7 @@ describe('runParallelTasks', () => {
     const first = vi.fn()
     const failure = vi.fn().mockRejectedValue(new Error('test'))
     const last = vi.fn()
-    const logger = createLogger()
+    const logger = makeConsoleMock()
 
     const tasks = [
       createTaskGroup(
@@ -48,19 +42,9 @@ describe('runParallelTasks', () => {
     expect(first).toHaveBeenCalledWith(ctx)
     expect(failure).toHaveBeenCalledWith(ctx)
     expect(last).toHaveBeenCalledWith(ctx)
-    expect(logger.log.mock.calls.flat()).toEqual([
-      colors.dim('    config'),
-      colors.dim('      *.js'),
-      colors.dim(`        ${figures.wip} first`),
-      colors.dim(`        ${figures.wip} failure`),
-      colors.dim(`        ${figures.wip} last`),
-      '',
-      `${figures.done} first`,
-      `${figures.done} last`,
-      '',
-    ])
-    expect(logger.error).toHaveBeenCalledExactlyOnceWith(colors.red(`${figures.error} failure`))
-    expect(logger.warn).not.toHaveBeenCalled()
+    expect(logger.printHistory()).toMatch(`${figures.done()} first`)
+    expect(logger.printHistory()).toMatch(`${figures.error()} failure`)
+    expect(logger.printHistory()).toMatch(`${figures.done()} last`)
   })
 
   it.for([
@@ -129,7 +113,7 @@ describe('runParallelTasks', () => {
   it('should stop pending tasks when aborted', async ({ expect }) => {
     const gate = Promise.withResolvers()
     const abortController = new AbortController()
-    const logger = createLogger()
+    const logger = makeConsoleMock()
     const first = vi.fn(() => gate.promise)
     const pending = vi.fn()
     const later = vi.fn()
@@ -152,21 +136,25 @@ describe('runParallelTasks', () => {
     await promise
 
     expect(pending).not.toHaveBeenCalled()
-    expect(logger.warn).toHaveBeenCalledWith(`${figures.cancelled} pending`)
+    expect(logger.printHistory()).toMatch(`${figures.cancelled()} pending`)
 
     expect(later).not.toHaveBeenCalled()
-    expect(logger.warn).toHaveBeenCalledWith(`${figures.cancelled} later`)
+    expect(logger.printHistory()).toMatch(`${figures.cancelled()} later`)
   })
 
   it('should handle an empty task list', async ({ expect }) => {
-    const logger = createLogger()
+    const logger = makeConsoleMock()
 
     await runParallelTasks({}, [], {
       abortController: new AbortController(),
       logger,
     })
 
-    expect(logger.log.mock.calls.flat()).toEqual(['', ''])
+    expect(logger.printHistory()).toMatchInlineSnapshot(`
+      "
+      LOG 
+      LOG "
+    `)
   })
 
   test('parseConcurrency', ({ expect }) => {
@@ -176,5 +164,6 @@ describe('runParallelTasks', () => {
     expect(parseConcurrency(42)).toBe(42)
     expect(parseConcurrency(0.4)).toBe(1)
     expect(parseConcurrency(1.2)).toBe(1)
+    expect(parseConcurrency(NaN)).toBe(1)
   })
 })

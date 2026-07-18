@@ -3,11 +3,12 @@
 import { userInfo } from 'node:os'
 
 import { getVersionNumber, parseCliOptions, printHelpText } from '../lib/cli.js'
+import { enableColors } from '../lib/colors.js'
 import { createDebug, enableDebug } from '../lib/debug.js'
 import lintStaged from '../lib/index.js'
-import { CONFIG_STDIN_ERROR } from '../lib/messages.js'
 import { readStdin } from '../lib/readStdin.js'
 
+enableColors(!!process.stdout.hasColors?.())
 const debugLog = createDebug('lint-staged:bin')
 
 // SIGINT handled by an AbortController
@@ -44,9 +45,8 @@ if (cliOptions.configPath === '-') {
     debugLog('Reading config from stdin')
     cliOptions.config = JSON.parse(await readStdin())
   } catch (error) {
-    debugLog(CONFIG_STDIN_ERROR, error)
-    console.error(CONFIG_STDIN_ERROR)
-    process.exit(1)
+    console.error('Failed to read config from stdin!')
+    throw error
   }
 }
 

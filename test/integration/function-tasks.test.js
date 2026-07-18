@@ -22,7 +22,7 @@ describe('lint-staged', () => {
         },
       })
 
-      expect(output).toMatch(`${figures.done} function task title`)
+      expect(output).toMatch(`${figures.done()} function task title`)
     })
   )
 })
