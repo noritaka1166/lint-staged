@@ -36,10 +36,13 @@ describe('validateOptions', () => {
       }
     )
 
-    it.for(['foo', 0.5, NaN])('Should reject invalid value: $0', async (concurrent, { expect }) => {
-      const logger = makeConsoleMock()
-      await expect(validateOptions({ concurrent }, logger)).rejects.toThrow(InvalidOptionsError)
-    })
+    it.for([-1, 'foo', 0.5, NaN])(
+      'Should reject invalid value: $0',
+      async (concurrent, { expect }) => {
+        const logger = makeConsoleMock()
+        await expect(validateOptions({ concurrent }, logger)).rejects.toThrow(InvalidOptionsError)
+      }
+    )
   })
 
   describe('cwd', () => {
@@ -98,5 +101,23 @@ describe('validateOptions', () => {
         See https://github.com/lint-staged/lint-staged#command-line-flags"
       `)
     })
+  })
+
+  describe('maxArgLength', () => {
+    it.for([1, 8191, 131072, 262144, Infinity])(
+      'Should accept valid value: $0',
+      async (maxArgLength, { expect }) => {
+        const logger = makeConsoleMock()
+        await expect(validateOptions({ maxArgLength }, logger)).resolves.toBeUndefined()
+      }
+    )
+
+    it.for([-Infinity, -1, 0, 0.5, NaN])(
+      'Should reject invalid value: $0',
+      async (maxArgLength, { expect }) => {
+        const logger = makeConsoleMock()
+        await expect(validateOptions({ maxArgLength }, logger)).rejects.toThrow(InvalidOptionsError)
+      }
+    )
   })
 })

@@ -84,12 +84,6 @@ suite('cli', () => {
       )
     })
 
-    it('should throw when using max-arg-length with non-numeric value', ({ expect }) => {
-      expect(() => parseCliOptions(['--max-arg-length=test'])).toThrow(
-        `Option '--mar-arg-length' takes a numeric argument`
-      )
-    })
-
     it('should parse max-arg-length option as integer', ({ expect }) => {
       const options = parseCliOptions(['--max-arg-length=100'])
       expect(options.maxArgLength).toBe(100)
