@@ -1,9 +1,5 @@
 # 🚫💩 lint-staged
 
-[![npm version](https://badge.fury.io/js/lint-staged.svg)](https://badge.fury.io/js/lint-staged)
-
----
-
 Run tasks like formatters and linters against staged git files and don't let :poop: slip into your code base!
 
 ```bash
@@ -168,7 +164,7 @@ By default changes made by tasks are automatically staged and added to the commi
 
 #### `--max-arg-length [number]`
 
-long commands (a lot of files) are automatically split into multiple chunks when it detects the current shell cannot handle them. Use this flag to override the maximum length of the generated command string.
+The list of staged files are appended to configured tasks as arguments, and the resulting string might be too long for the current shell, especially on Windows. _Lint-staged_ tries to avoid this by splitting the list of staged files into chunks resulting in the commands being run multiple times. This behavior affects all tasks, including functions. Use the `--max-arg-length` to override the platform-specific default value if you want to avoid this. Setting `--max-arg-length=Infinity` will disable chunking completely.
 
 #### `--no-stash`
 

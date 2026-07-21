@@ -114,9 +114,9 @@ describe('lintStaged', () => {
   })
 
   it.for([
-    ['darwin', 262144 / 2],
-    ['win32', 8191 / 2],
-    ['others', 131072 / 2],
+    ['darwin', 131_072],
+    ['win32', 4_096],
+    ['others', 65_536],
   ])(
     'should use default max arg length of $1 on $2',
     async ([platform, maxArgLength], { expect }) => {
