@@ -165,5 +165,6 @@ describe('runParallelTasks', () => {
     expect(parseConcurrency(0.4)).toBe(1)
     expect(parseConcurrency(1.2)).toBe(1)
     expect(parseConcurrency(NaN)).toBe(1)
+    expect(parseConcurrency(Infinity)).toBe(Infinity)
   })
 })

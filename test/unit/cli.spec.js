@@ -73,9 +73,19 @@ suite('cli', () => {
       expect(options.concurrent).toBe(false)
     })
 
+    it('should parse concurrent=true option', ({ expect }) => {
+      const options = parseCliOptions(['--concurrent=true'])
+      expect(options.concurrent).toBe(true)
+    })
+
     it('should parse concurrent=10 option', ({ expect }) => {
       const options = parseCliOptions(['--concurrent=10'])
       expect(options.concurrent).toBe(10)
+    })
+
+    it('should parse concurrent=Infinity option', ({ expect }) => {
+      const options = parseCliOptions(['--concurrent=Infinity'])
+      expect(options.concurrent).toBe(Infinity)
     })
 
     it('should throw when using max-arg-length without value', ({ expect }) => {

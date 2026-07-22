@@ -28,7 +28,7 @@ describe('validateOptions', () => {
   })
 
   describe('concurrent', () => {
-    it.for([false, true, 1, 42])(
+    it.for([false, true, 1, 42, Infinity])(
       'Should accept valid value: $0',
       async (concurrent, { expect }) => {
         const logger = makeConsoleMock()
@@ -104,7 +104,7 @@ describe('validateOptions', () => {
   })
 
   describe('maxArgLength', () => {
-    it.for([1, 8191, 131072, 262144, Infinity])(
+    it.for([undefined, null, 1, 8191, 131072, 262144, Infinity])(
       'Should accept valid value: $0',
       async (maxArgLength, { expect }) => {
         const logger = makeConsoleMock()
