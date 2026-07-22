@@ -1,3 +1,5 @@
+// oxlint-disable no-global-assign
+
 import makeConsoleMock from 'consolemock'
 import { beforeEach, describe, it, vi } from 'vitest'
 
