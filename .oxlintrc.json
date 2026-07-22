@@ -2,9 +2,13 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "categories": {
     "correctness": "error",
+    "nursery": "error",
     "perf": "error"
   },
-  "plugins": ["import", "eslint", "oxc", "vitest"],
+  "env": {
+    "node": true
+  },
+  "plugins": ["import", "eslint", "node", "oxc", "vitest"],
   "rules": {
     "no-await-in-loop": "off"
   }

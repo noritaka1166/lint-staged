@@ -344,7 +344,7 @@ describe('gitWorkflow', () => {
           logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
-          matchedFileChunks: [[]],
+          matchedFiles: new Set(),
         })
         const ctx = getInitialState()
 
@@ -372,7 +372,7 @@ describe('gitWorkflow', () => {
           logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
-          matchedFileChunks: [[]],
+          matchedFiles: new Set(),
         })
         const ctx = getInitialState()
 
@@ -391,7 +391,7 @@ describe('gitWorkflow', () => {
           logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
-          matchedFileChunks: [[]],
+          matchedFiles: new Set(),
         })
 
         // bad diff to produce error
@@ -414,7 +414,7 @@ describe('gitWorkflow', () => {
           logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
-          matchedFileChunks: [[]],
+          matchedFiles: new Set(),
         })
 
         gitWorkflow.mergeHeadBuffer = true
@@ -437,7 +437,7 @@ describe('gitWorkflow', () => {
           logger: makeConsoleMock(),
           topLevelDir: cwd,
           gitConfigDir: path.join(cwd, './.git'),
-          matchedFileChunks: [[]],
+          matchedFiles: new Set(),
         })
 
         const ctx = getInitialState()
