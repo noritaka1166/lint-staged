@@ -1,5 +1,11 @@
 # lint-staged
 
+## 17.1.1
+
+### Patch Changes
+
+- [#1820](https://github.com/lint-staged/lint-staged/pull/1820) [`a626a9f`](https://github.com/lint-staged/lint-staged/commit/a626a9f269d9ff6498a9b8245490e096f90c4bb7) - It's now possible to set `--max-arg-length=Infinity` to effectively disable chunking of tasks based on the number of staged files. The parsing and validation of the numeric CLI options `--max-arg-length` and `--concurrency` has been improved.
+
 ## 17.1.0
 
 ### Minor Changes
