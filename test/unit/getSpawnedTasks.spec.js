@@ -2,7 +2,7 @@ import { exec } from 'tinyexec'
 import { beforeEach, describe, it, vi } from 'vitest'
 
 import { getAbortController } from '../../lib/getAbortController.js'
-const { getSpawnedTasks } = await import('../../lib/getSpawnedTasks.js')
+const { getSpawnedTasks, getMaxArgLength } = await import('../../lib/getSpawnedTasks.js')
 
 vi.mock('tinyexec', () => ({
   exec: vi.fn().mockReturnValue({
@@ -185,5 +185,16 @@ describe('getSpawnedTasks', () => {
 
     /** ...but the original file list was not mutated */
     expect(files).toEqual(['test.js'])
+  })
+})
+
+describe('getMaxArgLength', () => {
+  it.for([
+    ['darwin', 262_144],
+    ['win32', 8_191],
+    ['linux', 131_072],
+    ['foobar', 131_072],
+  ])('should return $2 for $1', ([platform, expected], { expect }) => {
+    expect(getMaxArgLength(platform)).toEqual(expected)
   })
 })
