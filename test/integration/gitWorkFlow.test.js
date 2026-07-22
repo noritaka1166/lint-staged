@@ -329,6 +329,32 @@ describe('gitWorkflow', () => {
 
   describe('updateIndex', () => {
     it(
+      'should chunk files for git add',
+      withGitIntegration(async ({ cwd, expect, writeFile: writeRepoFile }) => {
+        const files = ['first.js', 'second.js'].map((filename) =>
+          normalizePath(path.join(cwd, filename))
+        )
+
+        await Promise.all(files.map((filename) => writeRepoFile(filename, 'test')))
+
+        const gitWorkflow = new GitWorkflow({
+          logger: makeConsoleMock(),
+          topLevelDir: cwd,
+          gitConfigDir: path.join(cwd, './.git'),
+          matchedFiles: new Set(files.map((filepath) => ({ filepath, status: 'A' }))),
+          maxArgLength: 1,
+        })
+        const execGit = vi.fn(gitWorkflow.execGit)
+        gitWorkflow.execGit = execGit
+
+        await gitWorkflow.updateIndex(getInitialState())
+
+        expect(execGit).toHaveBeenNthCalledWith(1, ['add', '--', files[0]])
+        expect(execGit).toHaveBeenNthCalledWith(2, ['add', '--', files[1]])
+      })
+    )
+
+    it(
       "should not override GIT_INDEX_FILE value when it's the default value",
       withGitIntegration(async ({ cwd, execGit, expect }) => {
         const gitIndexFile = await execGit([
