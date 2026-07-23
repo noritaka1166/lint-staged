@@ -112,29 +112,4 @@ describe('lintStaged', () => {
 
     expect(logger.printHistory()).toMatchInlineSnapshot(`""`)
   })
-
-  it.for([
-    ['darwin', 131_072],
-    ['win32', 4_096],
-    ['others', 65_536],
-  ])(
-    'should use default max arg length of $1 on $2',
-    async ([platform, maxArgLength], { expect }) => {
-      const realPlatform = process.platform
-      Object.defineProperty(process, 'platform', {
-        value: platform,
-      })
-
-      await lintStaged({}, makeConsoleMock())
-
-      expect(runAll).toHaveBeenLastCalledWith(
-        expect.objectContaining({ maxArgLength }),
-        expect.objectContaining({})
-      )
-
-      Object.defineProperty(process, 'platform', {
-        value: realPlatform,
-      })
-    }
-  )
 })

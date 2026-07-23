@@ -1,3 +1,5 @@
+// oxlint-disable no-global-assign
+
 import path from 'node:path'
 
 import makeConsoleMock from 'consolemock'
