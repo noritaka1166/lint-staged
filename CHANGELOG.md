@@ -1,5 +1,34 @@
 # lint-staged
 
+## 17.2.0
+
+### Minor Changes
+
+- [#1823](https://github.com/lint-staged/lint-staged/pull/1823) [`ee156cc`](https://github.com/lint-staged/lint-staged/commit/ee156cc7039494f1db11f389b1233c78f588238c) - The chunking of tasks based on maximum command line argument length has been re-implemented to be more precise. Now the chunking happens based on the final generated command string, instead of just the list of staged files like previously. This benefits mainly Windows platforms and function commands like:
+
+  ```js
+  /** @type {import('lint-staged').Configuration} */
+  export default {
+    "*.ts": () => "tsc", // Run "tsc" when any TS file is changed (for entire project)
+  };
+  ```
+
+  Where the spawned command is literally `"tsc"` without any extra arguments. Previously, this was still chunked when a lot of files were staged. Now, it probably won't be chunked because the length of the command is just three letters.
+
+  Also, native JavaScript/Node.js function tasks won't be chunked at all, when previously they were run multiple times when chunked:
+
+  ```js
+  /** @type {import('lint-staged').Configuration} */
+  export default {
+    "*.js": {
+      title: "Log staged JS files to console",
+      task: async (files) => {
+        console.log("Staged JS files:", files);
+      },
+    },
+  };
+  ```
+
 ## 17.1.1
 
 ### Patch Changes
@@ -395,7 +424,7 @@
   If you were using the shell option to avoid passing filenames to tasks, for example `bash -c 'tsc --noEmit'`, use the function syntax instead:
 
   ```js
-  export default { '*.ts': () => 'tsc --noEmit' }
+  export default { "*.ts": () => "tsc --noEmit" };
   ```
 
 - [#1546](https://github.com/lint-staged/lint-staged/pull/1546) [`158d15c`](https://github.com/lint-staged/lint-staged/commit/158d15c9aea0a3a87790ec3766442763cf387dba) Thanks [@iiroj](https://github.com/iiroj)! - Validation for deprecated advanced configuration has been removed. The advanced configuration was removed in _lint-staged_ version 9 and until now validation has failed if advanced configuration options were detected. Going forward the entire configuration will be treated with the same logic and if these advanced options are still present, they might be treated as valid globs for staged files instead.
@@ -408,13 +437,13 @@
 
   ```js
   export default {
-    '*.js': {
-      title: 'My task',
+    "*.js": {
+      title: "My task",
       task: async (files) => {
-        console.log('Staged JS files:', files)
+        console.log("Staged JS files:", files);
       },
     },
-  }
+  };
   ```
 
   _Lint-staged_ will run your function task with the staged files matching the configured glob as its argument, and show the custom title in its console output.
@@ -446,6 +475,7 @@
   By default Prettier [prefers double quotes](https://prettier.io/docs/rationale#strings).
 
   #### Previously
+
   1. Stage `file.js` with only double quotes `"` changed to `'`
   1. Run `git commit -am "I don't like double quotes"`
   1. _Lint-staged_ runs `prettier --write file.js`, converting all the `'` back to `"`
@@ -453,6 +483,7 @@
   1. Commit was not done, original state is restored and single quotes `'` are staged
 
   #### Now
+
   1. Stage `file.js` with only double-quotes `"` changed to `'`
   1. Run `git commit -am "I don't like double quotes"`
   1. _Lint-staged_ runs `prettier --write file.js`, converting all the `'` back to `"`
@@ -491,8 +522,8 @@
    * @type {import('lint-staged').Configuration}
    */
   export default {
-    '*': 'prettier --write',
-  }
+    "*": "prettier --write",
+  };
   ```
 
   It's also possible to use the `.ts` file extension for the configuration if your Node.js version supports it. The `--experimental-strip-types` flag was introduced in [Node.js v22.6.0](https://github.com/nodejs/node/releases/tag/v22.6.0) and unflagged in [v23.6.0](https://github.com/nodejs/node/releases/tag/v23.6.0), enabling Node.js to execute TypeScript files without additional configuration.
@@ -984,7 +1015,7 @@ To update your Node.js integration, please use:
 
 ```js
 // const lintStaged = require('lint-staged')
-import lintStaged from 'lint-staged'
+import lintStaged from "lint-staged";
 ```
 
 ## [v11.3.0-beta.2](https://github.com/lint-staged/lint-staged/releases/tag/v11.3.0-beta.2) - 30 Oct 2021
